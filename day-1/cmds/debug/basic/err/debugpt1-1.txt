@@ -1,0 +1,101 @@
+(dlv) continue
+> [unrecovered-panic] runtime.fatalpanic() /usr/local/go/src/runtime/panic.go:1217 (hits goroutine(1):1 total:1) (PC: 0x43a624)
+Warning: debugging optimized function
+	runtime.curg._panic.arg: interface {}(string) "runtime error: index out of range [1] with length 1"
+  1212:	// fatalpanic implements an unrecoverable panic. It is like fatalthrow, except
+  1213:	// that if msgs != nil, fatalpanic also prints panic messages and decrements
+  1214:	// runningPanicDefers once main is blocked from exiting.
+  1215:	//
+  1216:	//go:nosplit
+=>1217:	func fatalpanic(msgs *_panic) {
+  1218:		pc := getcallerpc()
+  1219:		sp := getcallersp()
+  1220:		gp := getg()
+  1221:		var docrash bool
+  1222:		// Switch to the system stack to avoid any stack growth, which
+(dlv) stack
+0  0x000000000043a624 in [1mruntime.fatalpanic[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:1217[0m
+1  0x000000000043961d in [1mruntime.gopanic[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:779[0m
+2  0x000000000043843c in [1mruntime.goPanicIndex[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:114[0m
+3  0x000000000049b374 in [1mmain.main[0m
+   at ./[1mlast-character.go:11[0m
+4  0x000000000043c992 in [1mruntime.main[0m
+   at /usr/local/go/src/runtime/[1mproc.go:271[0m
+5  0x000000000046afa1 in [1mruntime.goexit[0m
+   at /usr/local/go/src/runtime/[1masm_amd64.s:1695[0m
+(dlv) restart
+Process restarted with PID 13590
+(dlv) break ./last-character.go:11
+Breakpoint 1 set at 0x49b32e for main.main() ./last-character.go:11
+(dlv) continue
+> [Breakpoint 1] main.main() ./last-character.go:11 (hits goroutine(1):1 total:1) (PC: 0x49b32e)
+     6:	)
+     7:	
+     8:	func main() {
+     9:		fmt.Println("Hello Gophers! Pass me a word and I will print the last character!")
+    10:	
+=>  11:		arg := os.Args[1]
+    12:	
+    13:		fmt.Printf("The last character in that word is: %c\n", arg[len(arg)])
+    14:	}
+(dlv) print os.Args
+[]string len: 1, cap: 1, [
+	"/home/v8tix/Public/courses/go/debugging/repo/ultimate-go-debuggi...+84 more",
+]
+(dlv) clearall
+Breakpoint 1 cleared at 0x49b32e for main.main() ./last-character.go:11
+(dlv) rebuild
+(dlv) continue
+(dlv) restart "debuggging is so fun"
+Process restarted with PID 14013
+(dlv) restart "debugging is so fun"
+Process restarted with PID 14017
+(dlv) continue
+> [unrecovered-panic] runtime.fatalpanic() /usr/local/go/src/runtime/panic.go:1217 (hits goroutine(1):1 total:1) (PC: 0x43a624)
+Warning: debugging optimized function
+	runtime.curg._panic.arg: interface {}(string) "runtime error: index out of range [19] with length 19"
+  1212:	// fatalpanic implements an unrecoverable panic. It is like fatalthrow, except
+  1213:	// that if msgs != nil, fatalpanic also prints panic messages and decrements
+  1214:	// runningPanicDefers once main is blocked from exiting.
+  1215:	//
+  1216:	//go:nosplit
+=>1217:	func fatalpanic(msgs *_panic) {
+  1218:		pc := getcallerpc()
+  1219:		sp := getcallersp()
+  1220:		gp := getg()
+  1221:		var docrash bool
+  1222:		// Switch to the system stack to avoid any stack growth, which
+(dlv) stack
+0  0x000000000043a624 in [1mruntime.fatalpanic[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:1217[0m
+1  0x000000000043961d in [1mruntime.gopanic[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:779[0m
+2  0x000000000043843c in [1mruntime.goPanicIndex[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:114[0m
+3  0x000000000049b633 in [1mmain.main[0m
+   at ./[1mlast-character.go:18[0m
+4  0x000000000043c992 in [1mruntime.main[0m
+   at /usr/local/go/src/runtime/[1mproc.go:271[0m
+5  0x000000000046b021 in [1mruntime.goexit[0m
+   at /usr/local/go/src/runtime/[1masm_amd64.s:1695[0m
+(dlv) break ./last-character.go:18
+Breakpoint 2 set at 0x49b624 for main.main() ./last-character.go:18
+(dlv) restart
+Process restarted with PID 14102
+(dlv) continue
+> [Breakpoint 2] main.main() ./last-character.go:18 (hits goroutine(1):1 total:1) (PC: 0x49b624)
+    13:			os.Exit(1)
+    14:		}
+    15:	
+    16:		arg := os.Args[1]
+    17:	
+=>  18:		fmt.Printf("The last character in that word is: %c\n", arg[len(arg)])
+    19:	}
+(dlv) print arg
+"debugging is so fun"
+(dlv) print len(arg)
+19
+(dlv) exit

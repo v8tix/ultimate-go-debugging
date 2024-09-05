@@ -1,0 +1,1605 @@
+(dlv) continue main.main
+Breakpoint 1 set at 0x4c8b56 for main.main() ./main.go:77
+> [Breakpoint 1] main.main() ./main.go:77 (hits goroutine(1):1 total:1) (PC: 0x4c8b56)
+    72:				}
+    73:			}
+    74:		}
+    75:	}
+    76:	
+=>  77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+(dlv) list
+> main.main() ./main.go:77 (PC: 0x4c8b56)
+    72:				}
+    73:			}
+    74:		}
+    75:	}
+    76:	
+=>  77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+(dlv) breakpoints
+Breakpoint runtime-fatal-throw (enabled) at 0x43d604,0x43d6e4,0x4554ae for (multiple functions)() <multiple locations>:0 (0)
+Breakpoint unrecovered-panic (enabled) at 0x43dbe4 for runtime.fatalpanic() /usr/local/go/src/runtime/panic.go:1217 (0)
+	print runtime.curg._panic.arg
+(dlv) list
+> main.main() ./main.go:77 (PC: 0x4c8b56)
+    72:				}
+    73:			}
+    74:		}
+    75:	}
+    76:	
+=>  77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+(dlv) next
+> main.main() ./main.go:79 (PC: 0x4c8b5d)
+    74:		}
+    75:	}
+    76:	
+    77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+=>  79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+(dlv) next
+> main.main() ./main.go:81 (PC: 0x4c8b80)
+    76:	
+    77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+=>  81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+(dlv) next
+> main.main() ./main.go:83 (PC: 0x4c8c2e)
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+=>  83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+    88:		fmt.Printf("got data: %s\n", data)
+(dlv) step
+> io.ReadAll() /usr/local/go/src/io/io.go:709 (PC: 0x47b113)
+   704:	
+   705:	// ReadAll reads from r until an error or EOF and returns the data it read.
+   706:	// A successful call returns err == nil, not err == EOF. Because ReadAll is
+   707:	// defined to read from src until EOF, it does not treat an EOF from Read
+   708:	// as an error to be reported.
+=> 709:	func ReadAll(r Reader) ([]byte, error) {
+   710:		b := make([]byte, 0, 512)
+   711:		for {
+   712:			n, err := r.Read(b[len(b):cap(b)])
+   713:			b = b[:len(b)+n]
+   714:			if err != nil {
+(dlv) next
+> io.ReadAll() /usr/local/go/src/io/io.go:710 (PC: 0x47b142)
+   705:	// ReadAll reads from r until an error or EOF and returns the data it read.
+   706:	// A successful call returns err == nil, not err == EOF. Because ReadAll is
+   707:	// defined to read from src until EOF, it does not treat an EOF from Read
+   708:	// as an error to be reported.
+   709:	func ReadAll(r Reader) ([]byte, error) {
+=> 710:		b := make([]byte, 0, 512)
+   711:		for {
+   712:			n, err := r.Read(b[len(b):cap(b)])
+   713:			b = b[:len(b)+n]
+   714:			if err != nil {
+   715:				if err == EOF {
+(dlv) stepout
+> main.main() ./main.go:83 (PC: 0x4c8c5f)
+Values returned:
+	~r0: []uint8 len: 10, cap: 512, [102,111,111,98,97,114,98,97,122,10]
+	~r1: error nil
+
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+=>  83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+    88:		fmt.Printf("got data: %s\n", data)
+(dlv) disassemble
+TEXT main.main(SB) /home/v8tix/Public/courses/go/debugging/repo/ultimate-go-debugging-ultimate-debug-open-enrollment-2/day-2/session/main.go
+	main.go:77	0x4c8b40	4c8da42458feffff		lea r12, ptr [rsp+0xfffffe58]
+	main.go:77	0x4c8b48	4d3b6610			cmp r12, qword ptr [r14+0x10]
+	main.go:77	0x4c8b4c	0f864b070000			jbe 0x4c929d
+	main.go:77	0x4c8b52	55				push rbp
+	main.go:77	0x4c8b53	4889e5				mov rbp, rsp
+	main.go:77	0x4c8b56	4881ec20020000			sub rsp, 0x220
+	main.go:79	0x4c8b5d	488d05fc740100			lea rax, ptr [rip+0x174fc]
+	main.go:79	0x4c8b64	e85771f4ff			call $runtime.newobject
+	main.go:79	0x4c8b69	4889842418020000		mov qword ptr [rsp+0x218], rax
+	main.go:79	0x4c8b71	48c70000000000			mov qword ptr [rax], 0x0
+	main.go:79	0x4c8b78	c7400800000000			mov dword ptr [rax+0x8], 0x0
+	main.go:81	0x4c8b7f	90				nop
+	main.go:81	0x4c8b80	e81bcbfcff			call $context.Background
+	main.go:81	0x4c8b85	48898424b0010000		mov qword ptr [rsp+0x1b0], rax
+	main.go:81	0x4c8b8d	48899c24b8010000		mov qword ptr [rsp+0x1b8], rbx
+	main.go:81	0x4c8b95	440f11bc24a0010000		movups xmmword ptr [rsp+0x1a0], xmm15
+	main.go:81	0x4c8b9e	48c784249801000000000000	mov qword ptr [rsp+0x198], 0x0
+	main.go:81	0x4c8baa	488b8424b0010000		mov rax, qword ptr [rsp+0x1b0]
+	main.go:81	0x4c8bb2	488b9c24b8010000		mov rbx, qword ptr [rsp+0x1b8]
+	main.go:81	0x4c8bba	e821cbfcff			call $context.WithCancel
+	main.go:81	0x4c8bbf	48898424a0010000		mov qword ptr [rsp+0x1a0], rax
+	main.go:81	0x4c8bc7	48899c24a8010000		mov qword ptr [rsp+0x1a8], rbx
+	main.go:81	0x4c8bcf	48898c2498010000		mov qword ptr [rsp+0x198], rcx
+	main.go:81	0x4c8bd7	488b8c24a0010000		mov rcx, qword ptr [rsp+0x1a0]
+	main.go:81	0x4c8bdf	488b9424a8010000		mov rdx, qword ptr [rsp+0x1a8]
+	main.go:81	0x4c8be7	48898c2410010000		mov qword ptr [rsp+0x110], rcx
+	main.go:81	0x4c8bef	4889942418010000		mov qword ptr [rsp+0x118], rdx
+	main.go:81	0x4c8bf7	488b8c2498010000		mov rcx, qword ptr [rsp+0x198]
+	main.go:81	0x4c8bff	48898c24a0000000		mov qword ptr [rsp+0xa0], rcx
+	main.go:81	0x4c8c07	488b8c2410010000		mov rcx, qword ptr [rsp+0x110]
+	main.go:81	0x4c8c0f	488b942418010000		mov rdx, qword ptr [rsp+0x118]
+	main.go:81	0x4c8c17	48894c2458			mov qword ptr [rsp+0x58], rcx
+	main.go:81	0x4c8c1c	4889542460			mov qword ptr [rsp+0x60], rdx
+	main.go:81	0x4c8c21	488b8c24a0000000		mov rcx, qword ptr [rsp+0xa0]
+	main.go:81	0x4c8c29	48894c2470			mov qword ptr [rsp+0x70], rcx
+	main.go:83	0x4c8c2e	48c784248001000000000000	mov qword ptr [rsp+0x180], 0x0
+	main.go:83	0x4c8c3a	440f11bc2488010000		movups xmmword ptr [rsp+0x188], xmm15
+	main.go:83	0x4c8c43	440f11bc2470010000		movups xmmword ptr [rsp+0x170], xmm15
+	main.go:83	0x4c8c4c	488b1d25cc0b00			mov rbx, qword ptr [os.Stdin]
+	main.go:83	0x4c8c53	488d053e490300			lea rax, ptr [rip+0x3493e]
+	main.go:83	0x4c8c5a	e8a124fbff			call $io.ReadAll
+=>	main.go:83	0x4c8c5f	4889842480010000		mov qword ptr [rsp+0x180], rax
+	main.go:83	0x4c8c67	48899c2488010000		mov qword ptr [rsp+0x188], rbx
+	main.go:83	0x4c8c6f	48898c2490010000		mov qword ptr [rsp+0x190], rcx
+	main.go:83	0x4c8c77	4889bc2470010000		mov qword ptr [rsp+0x170], rdi
+	main.go:83	0x4c8c7f	4889b42478010000		mov qword ptr [rsp+0x178], rsi
+	main.go:83	0x4c8c87	488b8c2480010000		mov rcx, qword ptr [rsp+0x180]
+	main.go:83	0x4c8c8f	488b942488010000		mov rdx, qword ptr [rsp+0x188]
+	main.go:83	0x4c8c97	488b9c2490010000		mov rbx, qword ptr [rsp+0x190]
+	main.go:83	0x4c8c9f	48898c2488000000		mov qword ptr [rsp+0x88], rcx
+	main.go:83	0x4c8ca7	4889942490000000		mov qword ptr [rsp+0x90], rdx
+	main.go:83	0x4c8caf	48899c2498000000		mov qword ptr [rsp+0x98], rbx
+	main.go:83	0x4c8cb7	488b8c2470010000		mov rcx, qword ptr [rsp+0x170]
+	main.go:83	0x4c8cbf	488b942478010000		mov rdx, qword ptr [rsp+0x178]
+	main.go:83	0x4c8cc7	48894c2478			mov qword ptr [rsp+0x78], rcx
+	main.go:83	0x4c8ccc	4889942480000000		mov qword ptr [rsp+0x80], rdx
+	main.go:83	0x4c8cd4	488b8c2488000000		mov rcx, qword ptr [rsp+0x88]
+	main.go:83	0x4c8cdc	488b942490000000		mov rdx, qword ptr [rsp+0x90]
+	main.go:83	0x4c8ce4	488b9c2498000000		mov rbx, qword ptr [rsp+0x98]
+	main.go:83	0x4c8cec	48894c2440			mov qword ptr [rsp+0x40], rcx
+	main.go:83	0x4c8cf1	4889542448			mov qword ptr [rsp+0x48], rdx
+	main.go:83	0x4c8cf6	48895c2450			mov qword ptr [rsp+0x50], rbx
+	main.go:83	0x4c8cfb	488b4c2478			mov rcx, qword ptr [rsp+0x78]
+	main.go:83	0x4c8d00	488b942480000000		mov rdx, qword ptr [rsp+0x80]
+	main.go:83	0x4c8d08	48894c2430			mov qword ptr [rsp+0x30], rcx
+	main.go:83	0x4c8d0d	4889542438			mov qword ptr [rsp+0x38], rdx
+	main.go:84	0x4c8d12	4885c9				test rcx, rcx
+	main.go:84	0x4c8d15	7505				jnz 0x4c8d1c
+	main.go:84	0x4c8d17	e9e6000000			jmp 0x4c8e02
+	main.go:85	0x4c8d1c	440f11bc2460010000		movups xmmword ptr [rsp+0x160], xmm15
+	main.go:85	0x4c8d25	488d942460010000		lea rdx, ptr [rsp+0x160]
+	main.go:85	0x4c8d2d	4889942430010000		mov qword ptr [rsp+0x130], rdx
+	main.go:85	0x4c8d35	488b542430			mov rdx, qword ptr [rsp+0x30]
+	main.go:85	0x4c8d3a	488b742438			mov rsi, qword ptr [rsp+0x38]
+	main.go:85	0x4c8d3f	4889942420010000		mov qword ptr [rsp+0x120], rdx
+	main.go:85	0x4c8d47	4889b42428010000		mov qword ptr [rsp+0x128], rsi
+	main.go:85	0x4c8d4f	4889942408010000		mov qword ptr [rsp+0x108], rdx
+	main.go:85	0x4c8d57	4883bc240801000000		cmp qword ptr [rsp+0x108], 0x0
+	main.go:85	0x4c8d60	7502				jnz 0x4c8d64
+	main.go:85	0x4c8d62	eb16				jmp 0x4c8d7a
+	main.go:85	0x4c8d64	488b942408010000		mov rdx, qword ptr [rsp+0x108]
+	main.go:85	0x4c8d6c	488b5208			mov rdx, qword ptr [rdx+0x8]
+	main.go:85	0x4c8d70	4889942408010000		mov qword ptr [rsp+0x108], rdx
+	main.go:85	0x4c8d78	eb02				jmp 0x4c8d7c
+	main.go:85	0x4c8d7a	eb00				jmp 0x4c8d7c
+	main.go:85	0x4c8d7c	488b942430010000		mov rdx, qword ptr [rsp+0x130]
+	main.go:85	0x4c8d84	8402				test byte ptr [rdx], al
+	main.go:85	0x4c8d86	488bb42408010000		mov rsi, qword ptr [rsp+0x108]
+	main.go:85	0x4c8d8e	488bbc2428010000		mov rdi, qword ptr [rsp+0x128]
+	main.go:85	0x4c8d96	488932				mov qword ptr [rdx], rsi
+	main.go:85	0x4c8d99	833da0ce110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:85	0x4c8da0	7402				jz 0x4c8da4
+	main.go:85	0x4c8da2	eb02				jmp 0x4c8da6
+	main.go:85	0x4c8da4	eb12				jmp 0x4c8db8
+	main.go:85	0x4c8da6	e8b58efaff			call $runtime.gcWriteBarrier2
+	main.go:85	0x4c8dab	49893b				mov qword ptr [r11], rdi
+	main.go:85	0x4c8dae	488b7208			mov rsi, qword ptr [rdx+0x8]
+	main.go:85	0x4c8db2	49897308			mov qword ptr [r11+0x8], rsi
+	main.go:85	0x4c8db6	eb00				jmp 0x4c8db8
+	main.go:85	0x4c8db8	48897a08			mov qword ptr [rdx+0x8], rdi
+	main.go:85	0x4c8dbc	488b842430010000		mov rax, qword ptr [rsp+0x130]
+	main.go:85	0x4c8dc4	8400				test byte ptr [rax], al
+	main.go:85	0x4c8dc6	eb00				jmp 0x4c8dc8
+	main.go:85	0x4c8dc8	4889842438010000		mov qword ptr [rsp+0x138], rax
+	main.go:85	0x4c8dd0	48c784244001000001000000	mov qword ptr [rsp+0x140], 0x1
+	main.go:85	0x4c8ddc	48c784244801000001000000	mov qword ptr [rsp+0x148], 0x1
+	main.go:85	0x4c8de8	bb01000000			mov ebx, 0x1
+	main.go:85	0x4c8ded	4889d9				mov rcx, rbx
+	main.go:85	0x4c8df0	e88b03ffff			call $fmt.Println
+	main.go:86	0x4c8df5	b801000000			mov eax, 0x1
+	main.go:86	0x4c8dfa	e821bffeff			call $os.Exit
+	main.go:86	0x4c8dff	90				nop
+	main.go:86	0x4c8e00	eb02				jmp 0x4c8e04
+	main.go:84	0x4c8e02	eb00				jmp 0x4c8e04
+	main.go:88	0x4c8e04	440f11bc2460010000		movups xmmword ptr [rsp+0x160], xmm15
+	main.go:88	0x4c8e0d	488d942460010000		lea rdx, ptr [rsp+0x160]
+	main.go:88	0x4c8e15	48899424e8000000		mov qword ptr [rsp+0xe8], rdx
+	main.go:88	0x4c8e1d	488b442440			mov rax, qword ptr [rsp+0x40]
+	main.go:88	0x4c8e22	488b5c2448			mov rbx, qword ptr [rsp+0x48]
+	main.go:88	0x4c8e27	488b4c2450			mov rcx, qword ptr [rsp+0x50]
+	main.go:88	0x4c8e2c	e86f3cf4ff			call $runtime.convTslice
+	main.go:88	0x4c8e31	48898424e0000000		mov qword ptr [rsp+0xe0], rax
+	main.go:88	0x4c8e39	488b9424e8000000		mov rdx, qword ptr [rsp+0xe8]
+	main.go:88	0x4c8e41	8402				test byte ptr [rdx], al
+	main.go:88	0x4c8e43	488d35d6980000			lea rsi, ptr [rip+0x98d6]
+	main.go:88	0x4c8e4a	488932				mov qword ptr [rdx], rsi
+	main.go:88	0x4c8e4d	833deccd110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:88	0x4c8e54	7402				jz 0x4c8e58
+	main.go:88	0x4c8e56	eb02				jmp 0x4c8e5a
+	main.go:88	0x4c8e58	eb12				jmp 0x4c8e6c
+	main.go:88	0x4c8e5a	e8018efaff			call $runtime.gcWriteBarrier2
+	main.go:88	0x4c8e5f	498903				mov qword ptr [r11], rax
+	main.go:88	0x4c8e62	4c8b4208			mov r8, qword ptr [rdx+0x8]
+	main.go:88	0x4c8e66	4d894308			mov qword ptr [r11+0x8], r8
+	main.go:88	0x4c8e6a	eb00				jmp 0x4c8e6c
+	main.go:88	0x4c8e6c	48894208			mov qword ptr [rdx+0x8], rax
+	main.go:88	0x4c8e70	488b8c24e8000000		mov rcx, qword ptr [rsp+0xe8]
+	main.go:88	0x4c8e78	8401				test byte ptr [rcx], al
+	main.go:88	0x4c8e7a	eb00				jmp 0x4c8e7c
+	main.go:88	0x4c8e7c	48898c24f0000000		mov qword ptr [rsp+0xf0], rcx
+	main.go:88	0x4c8e84	48c78424f800000001000000	mov qword ptr [rsp+0xf8], 0x1
+	main.go:88	0x4c8e90	48c784240001000001000000	mov qword ptr [rsp+0x100], 0x1
+	main.go:88	0x4c8e9c	488d0567590200			lea rax, ptr [rip+0x25967]
+	main.go:88	0x4c8ea3	bb0d000000			mov ebx, 0xd
+	main.go:88	0x4c8ea8	bf01000000			mov edi, 0x1
+	main.go:88	0x4c8ead	4889fe				mov rsi, rdi
+	main.go:88	0x4c8eb0	e84b00ffff			call $fmt.Printf
+	main.go:91	0x4c8eb5	488d0524ae0000			lea rax, ptr [rip+0xae24]
+	main.go:91	0x4c8ebc	bb01000000			mov ebx, 0x1
+	main.go:91	0x4c8ec1	e8dadff3ff			call $runtime.makechan
+	main.go:91	0x4c8ec6	4889442428			mov qword ptr [rsp+0x28], rax
+	main.go:93	0x4c8ecb	440f11bc2450010000		movups xmmword ptr [rsp+0x150], xmm15
+	main.go:93	0x4c8ed4	488d9c2450010000		lea rbx, ptr [rsp+0x150]
+	main.go:93	0x4c8edc	48899c24c0000000		mov qword ptr [rsp+0xc0], rbx
+	main.go:93	0x4c8ee4	8403				test byte ptr [rbx], al
+	main.go:93	0x4c8ee6	488d150b480300			lea rdx, ptr [rip+0x3480b]
+	main.go:93	0x4c8eed	488913				mov qword ptr [rbx], rdx
+	main.go:93	0x4c8ef0	833d49cd110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:93	0x4c8ef7	7402				jz 0x4c8efb
+	main.go:93	0x4c8ef9	eb02				jmp 0x4c8efd
+	main.go:93	0x4c8efb	eb0e				jmp 0x4c8f0b
+	main.go:93	0x4c8efd	488b5308			mov rdx, qword ptr [rbx+0x8]
+	main.go:93	0x4c8f01	e83a8dfaff			call $runtime.gcWriteBarrier1
+	main.go:93	0x4c8f06	498913				mov qword ptr [r11], rdx
+	main.go:93	0x4c8f09	eb00				jmp 0x4c8f0b
+	main.go:93	0x4c8f0b	488d15de3f0300			lea rdx, ptr [rip+0x33fde]
+	main.go:93	0x4c8f12	48895308			mov qword ptr [rbx+0x8], rdx
+	main.go:93	0x4c8f16	8403				test byte ptr [rbx], al
+	main.go:93	0x4c8f18	eb00				jmp 0x4c8f1a
+	main.go:93	0x4c8f1a	48899c24c8000000		mov qword ptr [rsp+0xc8], rbx
+	main.go:93	0x4c8f22	48c78424d000000001000000	mov qword ptr [rsp+0xd0], 0x1
+	main.go:93	0x4c8f2e	48c78424d800000001000000	mov qword ptr [rsp+0xd8], 0x1
+	main.go:93	0x4c8f3a	488b442428			mov rax, qword ptr [rsp+0x28]
+	main.go:93	0x4c8f3f	b901000000			mov ecx, 0x1
+	main.go:93	0x4c8f44	4889cf				mov rdi, rcx
+	main.go:93	0x4c8f47	e814e7ffff			call $os/signal.Notify
+	main.go:95	0x4c8f4c	488d158dde0200			lea rdx, ptr [rip+0x2de8d]
+	main.go:95	0x4c8f53	4889942410020000		mov qword ptr [rsp+0x210], rdx
+	main.go:103	0x4c8f5b	488b542428			mov rdx, qword ptr [rsp+0x28]
+	main.go:95	0x4c8f60	4889942408020000		mov qword ptr [rsp+0x208], rdx
+	main.go:103	0x4c8f68	488b542470			mov rdx, qword ptr [rsp+0x70]
+	main.go:95	0x4c8f6d	4889942400020000		mov qword ptr [rsp+0x200], rdx
+	main.go:95	0x4c8f75	488d05e4940100			lea rax, ptr [rip+0x194e4]
+	main.go:95	0x4c8f7c	0f1f4000			nop dword ptr [rax], eax
+	main.go:95	0x4c8f80	e83b6df4ff			call $runtime.newobject
+	main.go:95	0x4c8f85	48898424b8000000		mov qword ptr [rsp+0xb8], rax
+	main.go:95	0x4c8f8d	488d152c040000			lea rdx, ptr [main.main.gowrap1]
+	main.go:95	0x4c8f94	488910				mov qword ptr [rax], rdx
+	main.go:95	0x4c8f97	488b942410020000		mov rdx, qword ptr [rsp+0x210]
+	main.go:95	0x4c8f9f	488bb424b8000000		mov rsi, qword ptr [rsp+0xb8]
+	main.go:95	0x4c8fa7	8406				test byte ptr [rsi], al
+	main.go:95	0x4c8fa9	833d90cc110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:95	0x4c8fb0	7402				jz 0x4c8fb4
+	main.go:95	0x4c8fb2	eb02				jmp 0x4c8fb6
+	main.go:95	0x4c8fb4	eb12				jmp 0x4c8fc8
+	main.go:95	0x4c8fb6	e8a58cfaff			call $runtime.gcWriteBarrier2
+	main.go:95	0x4c8fbb	498913				mov qword ptr [r11], rdx
+	main.go:95	0x4c8fbe	488b4e08			mov rcx, qword ptr [rsi+0x8]
+	main.go:95	0x4c8fc2	49894b08			mov qword ptr [r11+0x8], rcx
+	main.go:95	0x4c8fc6	eb00				jmp 0x4c8fc8
+	main.go:95	0x4c8fc8	48895608			mov qword ptr [rsi+0x8], rdx
+	main.go:95	0x4c8fcc	488b8c2408020000		mov rcx, qword ptr [rsp+0x208]
+	main.go:95	0x4c8fd4	488b9424b8000000		mov rdx, qword ptr [rsp+0xb8]
+	main.go:95	0x4c8fdc	8402				test byte ptr [rdx], al
+	main.go:95	0x4c8fde	833d5bcc110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:95	0x4c8fe5	7402				jz 0x4c8fe9
+	main.go:95	0x4c8fe7	eb02				jmp 0x4c8feb
+	main.go:95	0x4c8fe9	eb12				jmp 0x4c8ffd
+	main.go:95	0x4c8feb	e8708cfaff			call $runtime.gcWriteBarrier2
+	main.go:95	0x4c8ff0	49890b				mov qword ptr [r11], rcx
+	main.go:95	0x4c8ff3	488b5a10			mov rbx, qword ptr [rdx+0x10]
+	main.go:95	0x4c8ff7	49895b08			mov qword ptr [r11+0x8], rbx
+	main.go:95	0x4c8ffb	eb00				jmp 0x4c8ffd
+	main.go:95	0x4c8ffd	48894a10			mov qword ptr [rdx+0x10], rcx
+	main.go:95	0x4c9001	488b8c2400020000		mov rcx, qword ptr [rsp+0x200]
+	main.go:95	0x4c9009	488b9424b8000000		mov rdx, qword ptr [rsp+0xb8]
+	main.go:95	0x4c9011	8402				test byte ptr [rdx], al
+	main.go:95	0x4c9013	833d26cc110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:95	0x4c901a	7404				jz 0x4c9020
+	main.go:95	0x4c901c	eb04				jmp 0x4c9022
+	main.go:95	0x4c901e	6690				data16 nop
+	main.go:95	0x4c9020	eb12				jmp 0x4c9034
+	main.go:95	0x4c9022	e8398cfaff			call $runtime.gcWriteBarrier2
+	main.go:95	0x4c9027	49890b				mov qword ptr [r11], rcx
+	main.go:95	0x4c902a	488b5a18			mov rbx, qword ptr [rdx+0x18]
+	main.go:95	0x4c902e	49895b08			mov qword ptr [r11+0x8], rbx
+	main.go:95	0x4c9032	eb00				jmp 0x4c9034
+	main.go:95	0x4c9034	48894a18			mov qword ptr [rdx+0x18], rcx
+	main.go:95	0x4c9038	488b8424b8000000		mov rax, qword ptr [rsp+0xb8]
+	main.go:95	0x4c9040	e87bfbf7ff			call $runtime.newproc
+	main.go:106	0x4c9045	488d0554ac0000			lea rax, ptr [rip+0xac54]
+	main.go:106	0x4c904c	31db				xor ebx, ebx
+	main.go:106	0x4c904e	e84ddef3ff			call $runtime.makechan
+	main.go:106	0x4c9053	4889442468			mov qword ptr [rsp+0x68], rax
+	main.go:109	0x4c9058	488b842418020000		mov rax, qword ptr [rsp+0x218]
+	main.go:109	0x4c9060	bb02000000			mov ebx, 0x2
+	main.go:109	0x4c9065	e89615fbff			call $sync.(*WaitGroup).Add
+	main.go:112	0x4c906a	488b4c2458			mov rcx, qword ptr [rsp+0x58]
+	main.go:112	0x4c906f	488b542460			mov rdx, qword ptr [rsp+0x60]
+	main.go:112	0x4c9074	48898c24f0010000		mov qword ptr [rsp+0x1f0], rcx
+	main.go:112	0x4c907c	48899424f8010000		mov qword ptr [rsp+0x1f8], rdx
+	main.go:112	0x4c9084	488b8c2418020000		mov rcx, qword ptr [rsp+0x218]
+	main.go:112	0x4c908c	48898c24e8010000		mov qword ptr [rsp+0x1e8], rcx
+	main.go:112	0x4c9094	488b4c2468			mov rcx, qword ptr [rsp+0x68]
+	main.go:112	0x4c9099	48898c24e0010000		mov qword ptr [rsp+0x1e0], rcx
+	main.go:112	0x4c90a1	488d05f8920100			lea rax, ptr [rip+0x192f8]
+	main.go:112	0x4c90a8	e8136cf4ff			call $runtime.newobject
+	main.go:112	0x4c90ad	48898424b0000000		mov qword ptr [rsp+0xb0], rax
+	main.go:112	0x4c90b5	488d0d84020000			lea rcx, ptr [main.main.gowrap2]
+	main.go:112	0x4c90bc	488908				mov qword ptr [rax], rcx
+	main.go:112	0x4c90bf	488b8c24f8010000		mov rcx, qword ptr [rsp+0x1f8]
+	main.go:112	0x4c90c7	488b9424f0010000		mov rdx, qword ptr [rsp+0x1f0]
+	main.go:112	0x4c90cf	488b9c24b0000000		mov rbx, qword ptr [rsp+0xb0]
+	main.go:112	0x4c90d7	8403				test byte ptr [rbx], al
+	main.go:112	0x4c90d9	48895308			mov qword ptr [rbx+0x8], rdx
+	main.go:112	0x4c90dd	833d5ccb110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:112	0x4c90e4	7402				jz 0x4c90e8
+	main.go:112	0x4c90e6	eb02				jmp 0x4c90ea
+	main.go:112	0x4c90e8	eb12				jmp 0x4c90fc
+	main.go:112	0x4c90ea	e8718bfaff			call $runtime.gcWriteBarrier2
+	main.go:112	0x4c90ef	49890b				mov qword ptr [r11], rcx
+	main.go:112	0x4c90f2	488b5310			mov rdx, qword ptr [rbx+0x10]
+	main.go:112	0x4c90f6	49895308			mov qword ptr [r11+0x8], rdx
+	main.go:112	0x4c90fa	eb00				jmp 0x4c90fc
+	main.go:112	0x4c90fc	48894b10			mov qword ptr [rbx+0x10], rcx
+	main.go:112	0x4c9100	488b8c24e8010000		mov rcx, qword ptr [rsp+0x1e8]
+	main.go:112	0x4c9108	488b9424b0000000		mov rdx, qword ptr [rsp+0xb0]
+	main.go:112	0x4c9110	8402				test byte ptr [rdx], al
+	main.go:112	0x4c9112	833d27cb110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:112	0x4c9119	7402				jz 0x4c911d
+	main.go:112	0x4c911b	eb03				jmp 0x4c9120
+	main.go:112	0x4c911d	eb13				jmp 0x4c9132
+	main.go:112	0x4c911f	90				nop
+	main.go:112	0x4c9120	e83b8bfaff			call $runtime.gcWriteBarrier2
+	main.go:112	0x4c9125	49890b				mov qword ptr [r11], rcx
+	main.go:112	0x4c9128	488b5a18			mov rbx, qword ptr [rdx+0x18]
+	main.go:112	0x4c912c	49895b08			mov qword ptr [r11+0x8], rbx
+	main.go:112	0x4c9130	eb00				jmp 0x4c9132
+	main.go:112	0x4c9132	48894a18			mov qword ptr [rdx+0x18], rcx
+	main.go:112	0x4c9136	488b8c24e0010000		mov rcx, qword ptr [rsp+0x1e0]
+	main.go:112	0x4c913e	488b9424b0000000		mov rdx, qword ptr [rsp+0xb0]
+	main.go:112	0x4c9146	8402				test byte ptr [rdx], al
+	main.go:112	0x4c9148	833df1ca110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:112	0x4c914f	7402				jz 0x4c9153
+	main.go:112	0x4c9151	eb02				jmp 0x4c9155
+	main.go:112	0x4c9153	eb12				jmp 0x4c9167
+	main.go:112	0x4c9155	e8068bfaff			call $runtime.gcWriteBarrier2
+	main.go:112	0x4c915a	49890b				mov qword ptr [r11], rcx
+	main.go:112	0x4c915d	488b5a20			mov rbx, qword ptr [rdx+0x20]
+	main.go:112	0x4c9161	49895b08			mov qword ptr [r11+0x8], rbx
+	main.go:112	0x4c9165	eb00				jmp 0x4c9167
+	main.go:112	0x4c9167	48894a20			mov qword ptr [rdx+0x20], rcx
+	main.go:112	0x4c916b	488b8424b0000000		mov rax, qword ptr [rsp+0xb0]
+	main.go:112	0x4c9173	e848faf7ff			call $runtime.newproc
+	main.go:115	0x4c9178	488b4c2458			mov rcx, qword ptr [rsp+0x58]
+	main.go:115	0x4c917d	488b542460			mov rdx, qword ptr [rsp+0x60]
+	main.go:115	0x4c9182	48898c24d0010000		mov qword ptr [rsp+0x1d0], rcx
+	main.go:115	0x4c918a	48899424d8010000		mov qword ptr [rsp+0x1d8], rdx
+	main.go:115	0x4c9192	488b8c2418020000		mov rcx, qword ptr [rsp+0x218]
+	main.go:115	0x4c919a	48898c24c8010000		mov qword ptr [rsp+0x1c8], rcx
+	main.go:115	0x4c91a2	488b4c2468			mov rcx, qword ptr [rsp+0x68]
+	main.go:115	0x4c91a7	48898c24c0010000		mov qword ptr [rsp+0x1c0], rcx
+	main.go:115	0x4c91af	488d052a910100			lea rax, ptr [rip+0x1912a]
+	main.go:115	0x4c91b6	e8056bf4ff			call $runtime.newobject
+	main.go:115	0x4c91bb	48898424a8000000		mov qword ptr [rsp+0xa8], rax
+	main.go:115	0x4c91c3	488d0df6000000			lea rcx, ptr [main.main.gowrap3]
+	main.go:115	0x4c91ca	488908				mov qword ptr [rax], rcx
+	main.go:115	0x4c91cd	488b8c24d8010000		mov rcx, qword ptr [rsp+0x1d8]
+	main.go:115	0x4c91d5	488b9424d0010000		mov rdx, qword ptr [rsp+0x1d0]
+	main.go:115	0x4c91dd	488b9c24a8000000		mov rbx, qword ptr [rsp+0xa8]
+	main.go:115	0x4c91e5	8403				test byte ptr [rbx], al
+	main.go:115	0x4c91e7	48895308			mov qword ptr [rbx+0x8], rdx
+	main.go:115	0x4c91eb	833d4eca110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:115	0x4c91f2	7402				jz 0x4c91f6
+	main.go:115	0x4c91f4	eb02				jmp 0x4c91f8
+	main.go:115	0x4c91f6	eb12				jmp 0x4c920a
+	main.go:115	0x4c91f8	e8638afaff			call $runtime.gcWriteBarrier2
+	main.go:115	0x4c91fd	49890b				mov qword ptr [r11], rcx
+	main.go:115	0x4c9200	488b5310			mov rdx, qword ptr [rbx+0x10]
+	main.go:115	0x4c9204	49895308			mov qword ptr [r11+0x8], rdx
+	main.go:115	0x4c9208	eb00				jmp 0x4c920a
+	main.go:115	0x4c920a	48894b10			mov qword ptr [rbx+0x10], rcx
+	main.go:115	0x4c920e	488b8c24c8010000		mov rcx, qword ptr [rsp+0x1c8]
+	main.go:115	0x4c9216	488b9424a8000000		mov rdx, qword ptr [rsp+0xa8]
+	main.go:115	0x4c921e	8402				test byte ptr [rdx], al
+	main.go:115	0x4c9220	833d19ca110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:115	0x4c9227	7402				jz 0x4c922b
+	main.go:115	0x4c9229	eb02				jmp 0x4c922d
+	main.go:115	0x4c922b	eb12				jmp 0x4c923f
+	main.go:115	0x4c922d	e82e8afaff			call $runtime.gcWriteBarrier2
+	main.go:115	0x4c9232	49890b				mov qword ptr [r11], rcx
+	main.go:115	0x4c9235	488b5a18			mov rbx, qword ptr [rdx+0x18]
+	main.go:115	0x4c9239	49895b08			mov qword ptr [r11+0x8], rbx
+	main.go:115	0x4c923d	eb00				jmp 0x4c923f
+	main.go:115	0x4c923f	48894a18			mov qword ptr [rdx+0x18], rcx
+	main.go:115	0x4c9243	488b8c24c0010000		mov rcx, qword ptr [rsp+0x1c0]
+	main.go:115	0x4c924b	488b9424a8000000		mov rdx, qword ptr [rsp+0xa8]
+	main.go:115	0x4c9253	8402				test byte ptr [rdx], al
+	main.go:115	0x4c9255	833de4c9110000			cmp dword ptr [runtime.writeBarrier], 0x0
+	main.go:115	0x4c925c	7404				jz 0x4c9262
+	main.go:115	0x4c925e	6690				data16 nop
+	main.go:115	0x4c9260	eb02				jmp 0x4c9264
+	main.go:115	0x4c9262	eb12				jmp 0x4c9276
+	main.go:115	0x4c9264	e8f789faff			call $runtime.gcWriteBarrier2
+	main.go:115	0x4c9269	49890b				mov qword ptr [r11], rcx
+	main.go:115	0x4c926c	488b5a20			mov rbx, qword ptr [rdx+0x20]
+	main.go:115	0x4c9270	49895b08			mov qword ptr [r11+0x8], rbx
+	main.go:115	0x4c9274	eb00				jmp 0x4c9276
+	main.go:115	0x4c9276	48894a20			mov qword ptr [rdx+0x20], rcx
+	main.go:115	0x4c927a	488b8424a8000000		mov rax, qword ptr [rsp+0xa8]
+	main.go:115	0x4c9282	e839f9f7ff			call $runtime.newproc
+	main.go:118	0x4c9287	488b842418020000		mov rax, qword ptr [rsp+0x218]
+	main.go:118	0x4c928f	e84c15fbff			call $sync.(*WaitGroup).Wait
+	main.go:119	0x4c9294	4881c420020000			add rsp, 0x220
+	main.go:119	0x4c929b	5d				pop rbp
+	main.go:119	0x4c929c	c3				ret
+	main.go:77	0x4c929d	0f1f00				nop dword ptr [rax], eax
+	main.go:77	0x4c92a0	e83b6cfaff			call $runtime.morestack_noctxt
+	main.go:77	0x4c92a5	e996f8ffff			jmp $main.main
+(dlv) step-instruction
+> main.main() ./main.go:83 (PC: 0x4c8c67)
+	main.go:83	0x4c8c43	440f11bc2470010000	movups xmmword ptr [rsp+0x170], xmm15
+	main.go:83	0x4c8c4c	488b1d25cc0b00		mov rbx, qword ptr [os.Stdin]
+	main.go:83	0x4c8c53	488d053e490300		lea rax, ptr [rip+0x3493e]
+	main.go:83	0x4c8c5a	e8a124fbff		call $io.ReadAll
+	main.go:83	0x4c8c5f	4889842480010000	mov qword ptr [rsp+0x180], rax
+=>	main.go:83	0x4c8c67	48899c2488010000	mov qword ptr [rsp+0x188], rbx
+	main.go:83	0x4c8c6f	48898c2490010000	mov qword ptr [rsp+0x190], rcx
+	main.go:83	0x4c8c77	4889bc2470010000	mov qword ptr [rsp+0x170], rdi
+	main.go:83	0x4c8c7f	4889b42478010000	mov qword ptr [rsp+0x178], rsi
+	main.go:83	0x4c8c87	488b8c2480010000	mov rcx, qword ptr [rsp+0x180]
+	main.go:83	0x4c8c8f	488b942488010000	mov rdx, qword ptr [rsp+0x188]
+(dlv) list
+> main.main() ./main.go:83 (PC: 0x4c8c67)
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+=>  83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+    88:		fmt.Printf("got data: %s\n", data)
+(dlv) restart
+Process restarted with PID 39651
+(dlv) continue mama
+(dlv) continue main.main
+Breakpoint 2 set at 0x4c8b56 for main.main() ./main.go:77
+> [Breakpoint 2] main.main() ./main.go:77 (hits goroutine(1):1 total:1) (PC: 0x4c8b56)
+    72:				}
+    73:			}
+    74:		}
+    75:	}
+    76:	
+=>  77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+(dlv) next
+> main.main() ./main.go:79 (PC: 0x4c8b5d)
+    74:		}
+    75:	}
+    76:	
+    77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+=>  79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+(dlv) 
+> main.main() ./main.go:81 (PC: 0x4c8b80)
+    76:	
+    77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+=>  81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+(dlv) 
+> main.main() ./main.go:83 (PC: 0x4c8c2e)
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+=>  83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+    88:		fmt.Printf("got data: %s\n", data)
+(dlv) 
+> main.main() ./main.go:84 (PC: 0x4c8d12)
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+=>  84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+    88:		fmt.Printf("got data: %s\n", data)
+    89:	
+(dlv) 
+> main.main() ./main.go:88 (PC: 0x4c8e04)
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+=>  88:		fmt.Printf("got data: %s\n", data)
+    89:	
+    90:		// Create a channel to be notified when we get a signal.
+    91:		sigCh := make(chan os.Signal, 1)
+    92:		// Ensure we are notified on receipt of SIGTERM.
+    93:		signal.Notify(sigCh, syscall.SIGTERM)
+(dlv) print data
+[]uint8 len: 10, cap: 512, [102,111,111,98,97,114,98,97,122,10]
+(dlv) print string(data)
+"foobarbaz\n"
+(dlv) restart <stdin2.txt
+Process restarted with PID 39842
+(dlv) continue main.main
+Breakpoint 3 set at 0x4c8b56 for main.main() ./main.go:77
+> [Breakpoint 3] main.main() ./main.go:77 (hits goroutine(1):1 total:1) (PC: 0x4c8b56)
+    72:				}
+    73:			}
+    74:		}
+    75:	}
+    76:	
+=>  77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+(dlv) next
+> main.main() ./main.go:79 (PC: 0x4c8b5d)
+    74:		}
+    75:	}
+    76:	
+    77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+=>  79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+(dlv) 
+> main.main() ./main.go:81 (PC: 0x4c8b80)
+    76:	
+    77:	func main() {
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+=>  81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+(dlv) 
+> main.main() ./main.go:83 (PC: 0x4c8c2e)
+    78:		// Create a WaitGroup to ensure program does not exit before goroutines finish.
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+=>  83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+    88:		fmt.Printf("got data: %s\n", data)
+(dlv) 
+> main.main() ./main.go:84 (PC: 0x4c8d12)
+    79:		var wg sync.WaitGroup
+    80:		// Create a context object to pass to our goroutines.
+    81:		ctx, cancel := context.WithCancel(context.Background())
+    82:	
+    83:		data, err := io.ReadAll(os.Stdin)
+=>  84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+    88:		fmt.Printf("got data: %s\n", data)
+    89:	
+(dlv) 
+> main.main() ./main.go:88 (PC: 0x4c8e04)
+    83:		data, err := io.ReadAll(os.Stdin)
+    84:		if err != nil {
+    85:			fmt.Println(err)
+    86:			os.Exit(1)
+    87:		}
+=>  88:		fmt.Printf("got data: %s\n", data)
+    89:	
+    90:		// Create a channel to be notified when we get a signal.
+    91:		sigCh := make(chan os.Signal, 1)
+    92:		// Ensure we are notified on receipt of SIGTERM.
+    93:		signal.Notify(sigCh, syscall.SIGTERM)
+(dlv) print string(data)
+"and now for something completely different\n"
+(dlv) break mainfunc main.main
+Breakpoint mainfunc set at 0x4c8b56 for main.main() ./main.go:77
+(dlv) breakpoints
+Breakpoint runtime-fatal-throw (enabled) at 0x43d6e4,0x43d604,0x4554ae for (multiple functions)() <multiple locations>:0 (0)
+Breakpoint unrecovered-panic (enabled) at 0x43dbe4 for runtime.fatalpanic() /usr/local/go/src/runtime/panic.go:1217 (0)
+	print runtime.curg._panic.arg
+Breakpoint mainfunc (enabled) at 0x4c8b56 for main.main() ./main.go:77 (0)
+(dlv) clear mainfunc
+Breakpoint mainfunc cleared at 0x4c8b56 for main.main() ./main.go:77
+(dlv) break main.main
+Breakpoint 5 set at 0x4c8b56 for main.main() ./main.go:77
+(dlv) clear 5
+Breakpoint 5 cleared at 0x4c8b56 for main.main() ./main.go:77
+(dlv) break /^main.*/
+Breakpoint 6 set at 0x4c81b6 for main.produceValues() ./main.go:23
+Breakpoint 7 set at 0x4c852a for main.produceValues.deferwrap1() ./main.go:25
+Breakpoint 8 set at 0x4c8596 for main.consumeValues() ./main.go:53
+Breakpoint 9 set at 0x4c8aea for main.consumeValues.deferwrap1() ./main.go:55
+Breakpoint 10 set at 0x4c8b56 for main.main() ./main.go:77
+Breakpoint 11 set at 0x4c92ca for main.main.gowrap3() ./main.go:115
+Breakpoint 12 set at 0x4c934a for main.main.gowrap2() ./main.go:112
+Breakpoint 13 set at 0x4c93ca for main.main.gowrap1() ./main.go:95
+Breakpoint 14 set at 0x4c944e for main.main.func1() ./main.go:95
+(dlv) clearall
+Breakpoint 8 cleared at 0x4c8596 for main.consumeValues() ./main.go:53
+Breakpoint 9 cleared at 0x4c8aea for main.consumeValues.deferwrap1() ./main.go:55
+Breakpoint 11 cleared at 0x4c92ca for main.main.gowrap3() ./main.go:115
+Breakpoint 13 cleared at 0x4c93ca for main.main.gowrap1() ./main.go:95
+Breakpoint 14 cleared at 0x4c944e for main.main.func1() ./main.go:95
+Breakpoint 6 cleared at 0x4c81b6 for main.produceValues() ./main.go:23
+Breakpoint 7 cleared at 0x4c852a for main.produceValues.deferwrap1() ./main.go:25
+Breakpoint 10 cleared at 0x4c8b56 for main.main() ./main.go:77
+Breakpoint 12 cleared at 0x4c934a for main.main.gowrap2() ./main.go:112
+(dlv) break m33 main.go:33
+Breakpoint m33 set at 0x4c82a1 for main.produceValues() ./main.go:33
+(dlv) help cond
+Set breakpoint condition.
+
+	condition <breakpoint name or id> <boolean expression>.
+	condition -hitcount <breakpoint name or id> <operator> <argument>.
+	condition -per-g-hitcount <breakpoint name or id> <operator> <argument>.
+	condition -clear <breakpoint name or id>.
+
+Specifies that the breakpoint, tracepoint or watchpoint should break only if the boolean expression is true.
+
+See Documentation/cli/expr.md for a description of supported expressions.
+
+With the -hitcount option a condition on the breakpoint hit count can be set, the following operators are supported
+
+	condition -hitcount bp > n
+	condition -hitcount bp >= n
+	condition -hitcount bp < n
+	condition -hitcount bp <= n
+	condition -hitcount bp == n
+	condition -hitcount bp != n
+	condition -hitcount bp % n
+
+The -per-g-hitcount option works like -hitcount, but use per goroutine hitcount to compare with n.
+
+With the -clear option a condition on the breakpoint can removed.
+	
+The '% n' form means we should stop at the breakpoint when the hitcount is a multiple of n.
+
+Examples:
+
+	cond 2 i == 10				breakpoint 2 will stop when variable i equals 10
+	cond name runtime.curg.goid == 5	breakpoint 'name' will stop only on goroutine 5
+	cond -clear 2				the condition on breakpoint 2 will be removed
+
+(dlv) restart
+Process restarted with PID 39936
+(dlv) cond -hitcount m33 == 5
+(dlv) continue
+> [m33] main.produceValues() ./main.go:33 (hits goroutine(37):5 total:5) (PC: 0x4c82a1)
+Warning: listing may not match stale executable
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+    31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+=>  33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+(dlv) cond -clear m33
+(dlv) clear m33
+Breakpoint m33 cleared at 0x0 for main.produceValues() ./main.go:33
+(dlv) break m33 main.go:33
+Breakpoint m33 set at 0x4c82a1 for main.produceValues() ./main.go:33
+(dlv) on m33 print i
+(dlv) continue
+> [m33] main.produceValues() ./main.go:33 (hits goroutine(37):1 total:1) (PC: 0x4c82a1)
+	i: (unreadable eval error: could not find symbol value for i)
+Warning: listing may not match stale executable
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+    31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+=>  33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+(dlv) on m33 print id
+(dlv) continue
+> [m33] main.produceValues() ./main.go:33 (hits goroutine(37):2 total:2) (PC: 0x4c82a1)
+	i: (unreadable eval error: could not find symbol value for i)
+	id: 167884808600937270
+Warning: listing may not match stale executable
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+    31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+=>  33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+(dlv) toggle m33
+Breakpoint m33 toggled at 0x4c82a1 for main.produceValues() ./main.go:33
+(dlv) breakpoints
+Breakpoint runtime-fatal-throw (enabled) at 0x43d604,0x43d6e4,0x4554ae for (multiple functions)() <multiple locations>:0 (0)
+Breakpoint unrecovered-panic (enabled) at 0x43dbe4 for runtime.fatalpanic() /usr/local/go/src/runtime/panic.go:1217 (0)
+	print runtime.curg._panic.arg
+Breakpoint m33 (disabled) at main.go:33
+	print i
+	print id
+(dlv) clearall
+Breakpoint m33 cleared at 0x0 for main.produceValues() ./main.go:33
+(dlv) continue main.go:61
+Breakpoint 17 set at 0x4c865c for main.consumeValues() ./main.go:61
+> [Breakpoint 17] main.consumeValues() ./main.go:61 (hits goroutine(38):1 total:1) (PC: 0x4c865c)
+Warning: listing may not match stale executable
+    56:	
+    57:		// Create buffer to store values in-memory.
+    58:		buf := make([]packet, 0)
+    59:		for {
+    60:			select {
+=>  61:			case <-ctx.Done():
+    62:				// If the context has been cancelled, return.
+    63:				return
+    64:			case pkt := <-ch:
+    65:				// Store data in our buffer.
+    66:				buf = append(buf, pkt)
+(dlv) continue main.go:31
+Breakpoint 18 set at 0x4c8295 for main.produceValues() ./main.go:31
+> [Breakpoint 18] main.produceValues() ./main.go:31 (hits goroutine(37):1 total:1) (PC: 0x4c8295)
+Warning: listing may not match stale executable
+    26:		// Create a bytes buffer of length 64.
+    27:		buf := make([]byte, 1<<6)
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+=>  31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+    33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+(dlv) list
+> main.produceValues() ./main.go:31 (PC: 0x4c8295)
+Warning: listing may not match stale executable
+    26:		// Create a bytes buffer of length 64.
+    27:		buf := make([]byte, 1<<6)
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+=>  31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+    33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+(dlv) watch -rw id
+(dlv) continue main.go:31
+Breakpoint 20 set at 0x4c8295 for main.produceValues() ./main.go:31
+> [Breakpoint 20] main.produceValues() ./main.go:31 (hits goroutine(37):1 total:1) (PC: 0x4c8295)
+Warning: listing may not match stale executable
+    26:		// Create a bytes buffer of length 64.
+    27:		buf := make([]byte, 1<<6)
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+=>  31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+    33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+(dlv) watch -rw id
+(dlv) continue main.go:33
+Breakpoint 22 set at 0x4c82a1 for main.produceValues() ./main.go:33
+> [Breakpoint 22] main.produceValues() ./main.go:33 (hits goroutine(37):1 total:1) (PC: 0x4c82a1)
+Warning: listing may not match stale executable
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+    31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+=>  33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+(dlv) watch -rw id
+(dlv) watch -w id
+Watchpoint id set at 0xc000188e30
+(dlv) continue
+> watchpoint on [id] main.produceValues() ./main.go:49 (hits goroutine(37):1 total:1) (PC: 0x4c847b)
+Warning: listing may not match stale executable
+    44:			}
+    45:	
+    46:			id -= 16
+    47:	
+    48:			// Sleep 0.5 seconds.
+=>  49:			time.Sleep(10 * time.Millisecond)
+    50:		}
+    51:	}
+    52:	
+    53:	func consumeValues(ctx context.Context, wg *sync.WaitGroup, ch <-chan packet) {
+    54:		// Let WaitGroup know we're finished executing.
+(dlv) args
+ctx = context.Context(*context.cancelCtx) 0xc000188f98
+wg = (*sync.WaitGroup)(0xc000196010)
+ch = chan<- main.packet 0/0
+(dlv) locals
+buf = []uint8 len: 64, cap: 64, [...]
+id = 5560689405192617653
+p = main.packet {id: 5560689405192617669, val: []uint8 len: 64, cap: 64, [...]}
+(dlv) vars
+sync.expunged = (*interface {})(0xc00018a0a0)
+sync.allPoolsMu = sync.Mutex {state: 0, sema: 0}
+sync.allPools = []*sync.Pool len: 1, cap: 1, [...]
+sync.oldPools = []*sync.Pool len: 0, cap: 0, nil
+internal/abi.kindNames = []string len: 27, cap: 27, [...]
+os/signal.handlers = struct { sync.Mutex; os/signal.m map[chan<- os.Signal]*os/signal.handler; os/signal.ref [65]int64; os/signal.stopping []os/signal.stopping } {Mutex: (*sync.Mutex)(0x586680), m: map[chan<- os.Signal]*os/signal.handler [...], ref: [65]int64 [...],...+1 more}
+os/signal.watchSignalLoopOnce = sync.Once {done: (*"sync/atomic.Uint32")(0x5e5be8), m: (*sync.Mutex)(0x5e5bec)}
+os/signal.watchSignalLoop = os/signal.loop
+internal/cpu.DebugOptions = true
+internal/cpu.CacheLineSize = 64
+internal/cpu.X86 = struct { internal/cpu._ internal/cpu.CacheLinePad; HasAES bool; HasADX bool; HasAVX bool; HasAVX2 bool; HasAVX512F bool; HasAVX512BW bool; HasAVX512VL bool; HasBMI1 bool; HasBMI2 bool; HasERMS bool; HasFMA bool; HasOSXSAVE bool; HasPCLMULQDQ bool; HasPOPCNT bool; HasRDTSCP bool; HasSHA bool; HasSSE3 bool; HasSSSE3 bool; HasSSE41 bool; HasSSE42 bool; internal/cpu._ internal/cpu.CacheLinePad } {_: (*"internal/cpu.CacheLinePad")(0x5e6100), HasAES: true, HasADX: true,...+19 more}
+internal/cpu.options = []internal/cpu.option len: 19, cap: 27, [...]
+internal/cpu.maxExtendedFunctionInformation = 2147483656
+math/rand.globalRandGenerator = sync/atomic.Pointer[math/rand.Rand] {_: [0]*math/rand.Rand [], _: sync/atomic.noCopy {}, v: unsafe.Pointer(0xc000190360)}
+math/rand.randautoseed = ("*internal/godebug.Setting")(0xc0001901b0)
+math/rand.rngCooked = [607]int64 [...]
+internal/godebug.cache = sync.Map {mu: (*sync.Mutex)(0x586060), read: (*"sync/atomic.Pointer[sync.readOnly]")(0x586068), dirty: map[interface {}]*sync.entry [...],...+1 more}
+internal/godebug.empty = internal/godebug.value {text: "", bisect: *internal/bisect.Matcher nil}
+internal/godebug.updateMu = sync.Mutex {state: 0, sema: 0}
+internal/godebug.stderr = internal/godebug.runtimeStderr {}
+fmt.ppFree = sync.Pool {noCopy: sync.noCopy {}, local: unsafe.Pointer(0xc0001a2008), localSize: 8,...+3 more}
+fmt.errComplex = error(*errors.errorString) 0x585a98
+fmt.errBool = error(*errors.errorString) 0x585aa8
+os.dirBufPool = sync.Pool {noCopy: sync.noCopy {}, local: unsafe.Pointer(0x0), localSize: 0,...+3 more}
+os.ErrInvalid = error(*errors.errorString) 0x585b48
+os.ErrPermission = error(*errors.errorString) 0x585b58
+os.ErrExist = error(*errors.errorString) 0x585b68
+os.ErrNotExist = error(*errors.errorString) 0x585b78
+os.ErrClosed = error(*errors.errorString) 0x585b88
+os.ErrNoDeadline = error(*errors.errorString) 0x585b98
+os.ErrDeadlineExceeded = error(*internal/poll.DeadlineExceededError) 0x585ba8
+os.ErrProcessDone = error(*errors.errorString) 0x585bb8
+os.Stdin = (*os.File)(0xc00018c048)
+os.Stdout = (*os.File)(0xc00018c050)
+os.Stderr = (*os.File)(0xc00018c058)
+os.errWriteAtInAppendMode = error(*errors.errorString) 0x585bc8
+os.checkWrapErr = false
+os.Args = []string len: 1, cap: 1, [...]
+os.errPatternHasSeparator = error(*errors.errorString) 0x585bd8
+internal/safefilepath.errInvalidPath = error(*errors.errorString) 0x585d28
+internal/bytealg.MaxLen = 63
+internal/poll.errEAGAIN = error(syscall.Errno) EWOULDBLOCK (11)
+internal/poll.errEINVAL = error(syscall.Errno) EINVAL (22)
+internal/poll.errENOENT = error(syscall.Errno) ENOENT (2)
+internal/poll.ErrFileClosing = error(*errors.errorString) 0x585cf8
+internal/poll.ErrNoDeadline = error(*errors.errorString) 0x585d08
+internal/poll.ErrDeadlineExceeded = error(*internal/poll.DeadlineExceededError) 0x580d88
+internal/poll.ErrNotPollable = error(*errors.errorString) 0x585d18
+internal/poll.serverInit = sync.Once {done: (*"sync/atomic.Uint32")(0x5e5c28), m: (*sync.Mutex)(0x5e5c2c)}
+internal/poll.CloseFunc = syscall.Close
+internal/godebugs.All = []internal/godebugs.Info len: 28, cap: 28, [...]
+runtime/internal/syscall._zero = 0
+sync/atomic.firstStoreInProgress = 0
+runtime.useAeshash = true
+runtime.aeskeysched = [128]uint8 [...]
+runtime.hashkey = [4]uintptr [...]
+runtime.userArenaState = struct { runtime.lock runtime.mutex; runtime.reuse []runtime.liveUserArenaChunk; runtime.fault []runtime.liveUserArenaChunk } {lock: (*runtime.mutex)(0x586100), reuse: []runtime.liveUserArenaChunk len: 0, cap: 0, nil, fault: []runtime.liveUserArenaChunk len: 0, cap: 0, nil}
+runtime.iscgo = false
+runtime.set_crosscall2 = nil
+runtime.cgoHasExtraM = false
+runtime.cgo_yield = (*unsafe.Pointer)(0x585a10)
+runtime.ncgocall = 0
+runtime.x86HasPOPCNT = true
+runtime.x86HasSSE41 = true
+runtime.x86HasFMA = true
+runtime.useAVXmemmove = true
+runtime.cpuprof = runtime.cpuProfile {lock: (*runtime.mutex)(0x588dc0), on: false, log: *runtime.profBuf nil,...+4 more}
+runtime._cgo_setenv = unsafe.Pointer(0x0)
+runtime._cgo_unsetenv = unsafe.Pointer(0x0)
+runtime.boundsErrorFmts = [9]string [...]
+runtime.boundsNegErrorFmts = [8]string [...]
+runtime.exitHooks = struct { runtime.hooks []runtime.exitHook; runtime.runningExitHooks bool } {hooks: []runtime.exitHook len: 0, cap: 0, nil, runningExitHooks: false}
+runtime.defaultGOROOT = "/usr/local/go"
+runtime.buildVersion = "go1.22.5"
+runtime.fastlog2Table = [33]float64 [...]
+runtime.inf = +Inf
+runtime.itabLock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.itabTable = (*runtime.itabTableType)(0x584840)
+runtime.itabTableInit = runtime.itabTableType {size: 512, count: 28, entries: [512]*runtime.itab [...]}
+runtime.uint16Eface = (unreadable could not resolve interface type)
+runtime.uint32Eface = (unreadable could not resolve interface type)
+runtime.uint64Eface = (unreadable could not resolve interface type)
+runtime.stringEface = (unreadable could not resolve interface type)
+runtime.sliceEface = (unreadable could not resolve interface type)
+runtime.uint16Type = ("*internal/abi.Type")(0x4d3a20)
+runtime.uint32Type = ("*internal/abi.Type")(0x4d3a60)
+runtime.uint64Type = ("*internal/abi.Type")(0x4d3aa0)
+runtime.stringType = ("*internal/abi.Type")(0x4d39e0)
+runtime.sliceType = ("*internal/abi.Type")(0x4d4560)
+runtime.emptyTypeAssertCache = internal/abi.TypeAssertCache {Mask: 0, Entries: [1]internal/abi.TypeAssertCacheEntry [...]}
+runtime.emptyInterfaceSwitchCache = internal/abi.InterfaceSwitchCache {Mask: 0, Entries: [1]internal/abi.InterfaceSwitchCacheEntry [...]}
+runtime.staticuint64s = [256]uint64 [...]
+runtime.lockNames = []string len: 55, cap: 55, [...]
+runtime.physPageSize = 4096
+runtime.physHugePageSize = 2097152
+runtime.physHugePageShift = 21
+runtime.zerobase = 0
+runtime.globalAlloc = struct { runtime.mutex; runtime.persistentAlloc } {mutex: (*runtime.mutex)(0x5e5cc0), persistentAlloc: (*runtime.persistentAlloc)(0x5e5cc8)}
+runtime.persistentChunks = (*runtime.notInHeap)(0x75d1fdd40000)
+runtime.zeroVal = [1024]uint8 [...]
+runtime.emptymspan = runtime.mspan {_: (*"runtime/internal/sys.NotInHeap")(0x5861c0), next: *runtime.mspan nil, prev: *runtime.mspan nil,...+25 more}
+runtime.useCheckmark = false
+runtime.adviseUnused = 8
+runtime.metricsSema = 1
+runtime.metricsInit = false
+runtime.metrics = map[string]runtime.metricData nil
+runtime.sizeClassBuckets = []float64 len: 0, cap: 0, nil
+runtime.timeHistBuckets = []float64 len: 0, cap: 0, nil
+runtime.fingStatus = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 5}
+runtime.finlock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.fing = (*runtime.g)(0xc00019a000)
+runtime.finq = *runtime.finblock nil
+runtime.finc = *runtime.finblock nil
+runtime.finptrmask = [64]uint8 [...]
+runtime.allfin = *runtime.finblock nil
+runtime.finalizer1 = [5]uint8 [...]
+runtime.gcphase = 0
+runtime.writeBarrier = struct { runtime.enabled bool; runtime.pad [3]uint8; runtime.alignme uint64 } {enabled: false, pad: [3]uint8 [...], alignme: 0}
+runtime.gcBlackenEnabled = 0
+runtime.work = runtime.workType {full: 0, _: (*"internal/cpu.CacheLinePad")(0x5868c8), empty: 0,...+40 more}
+runtime.gcMarkDoneFlushed = 0
+runtime.poolcleanup = sync.poolCleanup
+runtime.boringCaches = []unsafe.Pointer len: 0, cap: 0, nil
+runtime.gcCPULimiter = runtime.gcCPULimiterState {lock: (*"runtime/internal/atomic.Uint32")(0x5e5fa0), enabled: (*"runtime/internal/atomic.Bool")(0x5e5fa4), bucket: (*struct { runtime.fill uint64; runtime.capacity uint64 })(0x5e5fa8),...+10 more}
+runtime.oneptrmask = [1]uint8 [...]
+runtime.gcController = runtime.gcControllerState {gcPercent: (*"runtime/internal/atomic.Int32")(0x5e6620), memoryLimit: (*"runtime/internal/atomic.Int64")(0x5e6628), heapMinimum: 4194304,...+36 more}
+runtime.scavenge = struct { runtime.gcPercentGoal runtime/internal/atomic.Uint64; runtime.memoryLimitGoal runtime/internal/atomic.Uint64; runtime.assistTime runtime/internal/atomic.Int64; runtime.backgroundTime runtime/internal/atomic.Int64 } {gcPercentGoal: (*"runtime/internal/atomic.Uint64")(0x5e5d40), memoryLimitGoal: (*"runtime/internal/atomic.Uint64")(0x5e5d48), assistTime: (*"runtime/internal/atomic.Int64")(0x5e5d50),...+1 more}
+runtime.scavenger = runtime.scavengerState {lock: (*runtime.mutex)(0x586260), g: (*runtime.g)(0xc00010a540), parked: true,...+11 more}
+runtime.sweep = runtime.sweepdata {lock: (*runtime.mutex)(0x5860a0), g: (*runtime.g)(0xc00010a380), parked: true,...+2 more}
+runtime.mheap_ = runtime.mheap {_: (*"runtime/internal/sys.NotInHeap")(0x58ec00), lock: (*runtime.mutex)(0x58ec00), pages: (*runtime.pageAlloc)(0x58ec08),...+30 more}
+runtime.mSpanStateNames = []string len: 3, cap: 3, [...]
+runtime.gcBitsArenas = struct { runtime.lock runtime.mutex; runtime.free *runtime.gcBitsArena; runtime.next *runtime.gcBitsArena; runtime.current *runtime.gcBitsArena; runtime.previous *runtime.gcBitsArena } {lock: (*runtime.mutex)(0x5e5da0), free: *runtime.gcBitsArena nil, next: (*runtime.gcBitsArena)(0x75d244635000),...+2 more}
+runtime.levelBits = [5]uint [...]
+runtime.levelShift = [5]uint [...]
+runtime.levelLogPages = [5]uint [...]
+runtime.profInsertLock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.profBlockLock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.profMemActiveLock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.profMemFutureLock = [3]runtime.mutex [...]
+runtime.mbuckets = runtime/internal/atomic.UnsafePointer {noCopy: runtime/internal/atomic.noCopy {}, value: unsafe.Pointer(0x0)}
+runtime.bbuckets = runtime/internal/atomic.UnsafePointer {noCopy: runtime/internal/atomic.noCopy {}, value: unsafe.Pointer(0x0)}
+runtime.xbuckets = runtime/internal/atomic.UnsafePointer {noCopy: runtime/internal/atomic.noCopy {}, value: unsafe.Pointer(0x0)}
+runtime.buckhash = runtime/internal/atomic.UnsafePointer {noCopy: runtime/internal/atomic.noCopy {}, value: unsafe.Pointer(0x0)}
+runtime.mProfCycle = runtime.mProfCycleHolder {value: (*"runtime/internal/atomic.Uint32")(0x5e59d8)}
+runtime.blockprofilerate = 0
+runtime.mutexprofilerate = 0
+runtime.MemProfileRate = 0
+runtime.disableMemoryProfiling = true
+runtime.goroutineProfile = struct { runtime.sema uint32; runtime.active bool; runtime.offset runtime/internal/atomic.Int64; runtime.records []runtime.StackRecord; runtime.labels []unsafe.Pointer } {sema: 1, active: false, offset: (*"runtime/internal/atomic.Int64")(0x581ba8),...+2 more}
+runtime.tracelock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.minOffAddr = runtime.offAddr {a: 18446603336221196288}
+runtime.maxOffAddr = runtime.offAddr {a: 140737488355327}
+runtime.spanSetBlockPool = runtime.spanSetBlockAlloc {stack: 0}
+runtime.memstats = runtime.mstats {heapStats: (*runtime.consistentHeapStats)(0x5e7620), stacks_sys: 0, mspan_sys: 48960,...+14 more}
+runtime.netpollInitLock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.netpollInited = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 1}
+runtime.pollcache = runtime.pollCache {lock: (*runtime.mutex)(0x5e5c50), first: *runtime.pollDesc nil}
+runtime.netpollWaiters = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.pdEface = interface {}(*runtime.pollDesc) 0x580c88
+runtime.pdType = ("*internal/abi.Type")(0x4dc780)
+runtime.epfd = 3
+runtime.netpollBreakRd = 4
+runtime.netpollBreakWr = 5
+runtime.netpollWakeSig = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.procAuxv = []uint8 len: 16, cap: 16, [...]
+runtime.addrspace_vec = [1]uint8 [...]
+runtime.auxvreadbuf = [128]uintptr [...]
+runtime.secureMode = false
+runtime.sysTHPSizePath = []uint8 len: 51, cap: 51, [...]
+runtime.urandom_dev = []uint8 len: 13, cap: 13, [...]
+runtime.perThreadSyscall = runtime.perThreadSyscallArgs {trap: 0, a1: 0, a2: 0,...+6 more}
+runtime.sigset_all = runtime.sigset [...]
+runtime.shiftError = error(runtime.errorString) "negative shift amount"
+runtime.divideError = error(runtime.errorString) "integer divide by zero"
+runtime.overflowError = error(runtime.errorString) "integer overflow"
+runtime.floatError = error(runtime.errorString) "floating point error"
+runtime.memoryError = error(runtime.errorString) "invalid memory address or nil pointer dereference"
+runtime.panicnil = (*runtime.godebugInc)(0x5810f0)
+runtime.runningPanicDefers = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.panicking = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.paniclk = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.didothers = false
+runtime.deadlock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.asyncPreemptStack = 472
+runtime.printBacklog = [512]uint8 [...]
+runtime.printBacklogIndex = 0
+runtime.debuglock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.minhexdigits = 0
+runtime.modinfo = "0w�\f�t\b\x02A��\a��\x18�path\tgithub.com/ultimate-debug/session\nmod\tgithu...+387 more"
+runtime.m0 = runtime.m {g0: (*runtime.g)(0x586300), morebuf: (*runtime.gobuf)(0x586b08), divmod: 0,...+66 more}
+runtime.g0 = runtime.g {stack: (*runtime.stack)(0x586300), stackguard0: 140734687037584, stackguard1: 140734687037584,...+51 more}
+runtime.mcache0 = *runtime.mcache nil
+runtime.runtime_inittasks = []*runtime.initTask len: 2, cap: 2, [...]
+runtime.main_init_done = chan bool 0/0
+runtime.mainStarted = true
+runtime.runtimeInitTime = 103225130773639
+runtime.initSigmask = runtime.sigset [...]
+runtime.gcrash = runtime.g {stack: (*runtime.stack)(0x5864c0), stackguard0: 824633918440, stackguard1: 824633918440,...+51 more}
+runtime.crashingG = runtime/internal/atomic.Pointer[runtime.g] {u: (*"runtime/internal/atomic.UnsafePointer")(0x585970)}
+runtime.allglock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.allgs = []*runtime.g len: 10, cap: 16, [...]
+runtime.allglen = 10
+runtime.allgptr = (**runtime.g)(0xc0001c4000)
+runtime.freezing = runtime/internal/atomic.Bool {u: (*"runtime/internal/atomic.Uint8")(0x5e59b8)}
+runtime.casgstatusAlwaysTrack = false
+runtime.stwReasonStrings = [17]string [...]
+runtime.stopTheWorldContext = runtime.worldStop {reason: stwUnknown (0), start: 0}
+runtime.worldsema = 1
+runtime.gcsema = 1
+runtime.extraM = runtime/internal/atomic.Uintptr {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.extraMLength = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.extraMWaiters = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.extraMInUse = runtime/internal/atomic.Uint32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.allocmLock = runtime.rwmutex {rLock: (*runtime.mutex)(0x5e5e20), readers: 0, readerPass: 0,...+5 more}
+runtime.execLock = runtime.rwmutex {rLock: (*runtime.mutex)(0x5e5e60), readers: 0, readerPass: 0,...+5 more}
+runtime.newmHandoff = struct { runtime.lock runtime.mutex; runtime.newm runtime.muintptr; runtime.waiting bool; runtime.wake runtime.note; runtime.haveTemplateThread uint32 } {lock: (*runtime.mutex)(0x5e5de0), newm: 0, waiting: true,...+2 more}
+runtime.inForkedChild = false
+runtime.prof = struct { runtime.signalLock runtime/internal/atomic.Uint32; runtime.hz runtime/internal/atomic.Int32 } {signalLock: (*"runtime/internal/atomic.Uint32")(0x5e5b60), hz: (*"runtime/internal/atomic.Int32")(0x5e5b64)}
+runtime.forcegcperiod = 120000000000
+runtime.starttime = 0
+runtime.stealOrder = runtime.randomOrder {count: 8, coprimes: []uint32 len: 4, cap: 4, [...]}
+runtime.inittrace = runtime.tracestat {active: false, id: 0, allocs: 0,...+1 more}
+runtime.startupRand = []uint8 len: 0, cap: 0, nil
+runtime.globalRand = struct { runtime.lock runtime.mutex; runtime.seed [32]uint8; runtime.state internal/chacha8rand.State; runtime.init bool } {lock: (*runtime.mutex)(0x5e64c0), seed: [32]uint8 [...], state: (*"internal/chacha8rand.State")(0x5e64e8),...+1 more}
+runtime.readRandomFailed = false
+runtime.ticks = runtime.ticksType {lock: (*runtime.mutex)(0x5e5d80), startTicks: 289870359874221, startTime: 103225128123121,...+1 more}
+runtime.envs = []string len: 77, cap: 77, [...]
+runtime.argslice = []string len: 1, cap: 1, [...]
+runtime.godebugDefault = "httplaxcontentlength=1,httpmuxgo121=1,netedns0=0,panicnil=1,tls1...+36 more"
+runtime.godebugUpdate = runtime/internal/atomic.Pointer[func(string, string)] {u: (*"runtime/internal/atomic.UnsafePointer")(0x585980)}
+runtime.godebugEnv = runtime/internal/atomic.Pointer[string] {u: (*"runtime/internal/atomic.UnsafePointer")(0x585988)}
+runtime.godebugNewIncNonDefault = runtime/internal/atomic.Pointer[func(string) func()] {u: (*"runtime/internal/atomic.UnsafePointer")(0x585990)}
+runtime.auxv = []uintptr len: 44, cap: 44, [...]
+runtime.traceback_cache = 4
+runtime.traceback_env = 4
+runtime.argc = 1
+runtime.argv = (**uint8)(0x7fff59084528)
+runtime.test_z64 = 3298534883331
+runtime.test_x64 = 42
+runtime.debug = struct { runtime.cgocheck int32; runtime.clobberfree int32; runtime.disablethp int32; runtime.dontfreezetheworld int32; runtime.efence int32; runtime.gccheckmark int32; runtime.gcpacertrace int32; runtime.gcshrinkstackoff int32; runtime.gcstoptheworld int32; runtime.gctrace int32; runtime.invalidptr int32; runtime.madvdontneed int32; runtime.runtimeContentionStacks runtime/internal/atomic.Int32; runtime.scavtrace int32; runtime.scheddetail int32; runtime.schedtrace int32; runtime.tracebackancestors int32; runtime.asyncpreemptoff int32; runtime.harddecommit int32; runtime.adaptivestackstart int32; runtime.tracefpunwindoff int32; runtime.traceadvanceperiod int32; runtime.malloc bool; runtime.allocfreetrace int32; runtime.inittrace int32; runtime.sbrk int32; runtime.panicnil runtime/internal/atomic.Int32 } {cgocheck: 1, clobberfree: 0, disablethp: 0,...+24 more}
+runtime.dbgvars = []*runtime.dbgVar len: 26, cap: 26, [...]
+runtime.waitReasonStrings = [37]string [...]
+runtime.allm = (*runtime.m)(0xc0001b0008)
+runtime.gomaxprocs = 8
+runtime.ncpu = 8
+runtime.forcegc = runtime.forcegcstate {lock: (*runtime.mutex)(0x585f50), g: (*runtime.g)(0xc000006700), idle: (*"runtime/internal/atomic.Bool")(0x585f60)}
+runtime.sched = runtime.schedt {goidgen: (*"runtime/internal/atomic.Uint64")(0x587300), lastpoll: (*"runtime/internal/atomic.Int64")(0x587308), pollUntil: (*"runtime/internal/atomic.Int64")(0x587310),...+42 more}
+runtime.newprocs = 0
+runtime.allpLock = runtime.mutex {lockRankStruct: runtime.lockRankStruct {}, key: 0}
+runtime.allp = []*runtime.p len: 8, cap: 8, [...]
+runtime.idlepMask = runtime.pMask len: 1, cap: 1, [...]
+runtime.timerpMask = runtime.pMask len: 1, cap: 1, [...]
+runtime.gcBgMarkWorkerPool = 0
+runtime.gcBgMarkWorkerCount = 0
+runtime.processorVersionInfo = 591593
+runtime.isIntel = true
+runtime.islibrary = false
+runtime.isarchive = false
+runtime.chansendpc = 4223328
+runtime.chanrecvpc = 4225760
+runtime.semtable = runtime.semTable [...]
+runtime.fwdSig = [65]uintptr [...]
+runtime.handlingSig = [65]uint32 [...]
+runtime.disableSigChan = chan uint32 0/0
+runtime.enableSigChan = chan uint32 0/0
+runtime.maskUpdatedChan = chan struct {} 0/0
+runtime.signalsOK = true
+runtime.sigprofCallers = runtime.cgoCallers [...]
+runtime.sigprofCallersUse = 0
+runtime.crashing = runtime/internal/atomic.Int32 {noCopy: runtime/internal/atomic.noCopy {}, value: 0}
+runtime.testSigtrap = nil
+runtime.testSigusr1 = nil
+runtime.sigsetAllExiting = runtime.sigset [...]
+runtime.sig = struct { runtime.note runtime.note; runtime.mask [3]uint32; runtime.wanted [3]uint32; runtime.ignored [3]uint32; runtime.recv [3]uint32; runtime.state runtime/internal/atomic.Uint32; runtime.delivering runtime/internal/atomic.Uint32; runtime.inuse bool } {note: (*runtime.note)(0x5e5f40), mask: [3]uint32 [...], wanted: [3]uint32 [...],...+5 more}
+runtime.sigtable = [65]runtime.sigTabT [...]
+runtime.class_to_size = [68]uint16 [...]
+runtime.class_to_allocnpages = [68]uint8 [...]
+runtime.class_to_divmagic = [68]uint32 [...]
+runtime.size_to_class8 = [129]uint8 [...]
+runtime.size_to_class128 = [249]uint8 [...]
+runtime.stackPoisonCopy = 0
+runtime.stackpool = [4]struct { runtime.item runtime.stackpoolItem; runtime._ [40]uint8 } [...]
+runtime.stackLarge = struct { runtime.lock runtime.mutex; runtime.free [35]runtime.mSpanList } {lock: (*runtime.mutex)(0x5e6be0), free: [35]runtime.mSpanList [...]}
+runtime.maxstacksize = 1000000000
+runtime.maxstackceiling = 1000000000
+runtime.startingStackSize = 2048
+runtime.methodValueCallFrameObjs = [1]runtime.stackObjectRecord [...]
+runtime.intArgRegs = 9
+runtime.pinnedTypemaps = []map[internal/abi.TypeOff]*internal/abi.Type len: 0, cap: 0, nil
+runtime.firstmoduledata = runtime.moduledata {NotInHeap: (*"runtime/internal/sys.NotInHeap")(0x57b1e0), pcHeader: (*runtime.pcHeader)(0x500540), funcnametab: []uint8 len: 69328, cap: 69328, [...],...+42 more}
+runtime.modulesSlice = (*[]*runtime.moduledata)(0xc000010000)
+runtime.faketime = 0
+runtime.overrideWrite = nil
+runtime.trace = struct { runtime.lock runtime.mutex; runtime.reading *runtime.traceBuf; runtime.empty *runtime.traceBuf; runtime.full [2]runtime.traceBufQueue; runtime.workAvailable runtime/internal/atomic.Bool; runtime.readerGen runtime/internal/atomic.Uintptr; runtime.flushedGen runtime/internal/atomic.Uintptr; runtime.headerWritten bool; runtime.doneSema [2]uint32; runtime.stackTab [2]runtime.traceStackTable; runtime.stringTab [2]runtime.traceStringTable; runtime.cpuLogRead [2]*runtime.profBuf; runtime.signalLock runtime/internal/atomic.Uint32; runtime.cpuLogWrite [2]runtime/internal/atomic.Pointer[runtime.profBuf]; runtime.cpuSleep *runtime.wakeableSleep; runtime.cpuLogDone <-chan struct {}; runtime.cpuBuf [2]*runtime.traceBuf; runtime.reader runtime/internal/atomic.Pointer[runtime.g]; runtime.markWorkerLabels [2][4]runtime.traceArg; runtime.goStopReasons [2][3]runtime.traceArg; runtime.goBlockReasons [2][15]runtime.traceArg; runtime.gen runtime/internal/atomic.Uintptr; runtime.lastNonZeroGen uintptr; runtime.shutdown runtime/internal/atomic.Bool; runtime.exitingSyscall runtime/internal/atomic.Int32; runtime.seqGC uint64 } {lock: (*runtime.mutex)(0x5a56c0), reading: *runtime.traceBuf nil, empty: *runtime.traceBuf nil,...+23 more}
+runtime.gStatusStrings = [10]string [...]
+runtime.cgoTraceback = unsafe.Pointer(0x0)
+runtime.cgoSymbolizer = unsafe.Pointer(0x0)
+runtime.reflectOffs = struct { runtime.lock runtime.mutex; runtime.next int32; runtime.m map[int32]unsafe.Pointer; runtime.minv map[unsafe.Pointer]int32 } {lock: (*runtime.mutex)(0x5860e0), next: 0, m: map[int32]unsafe.Pointer nil,...+1 more}
+runtime.vdsoLinuxVersion = runtime.vdsoVersionKey {version: "LINUX_2.6", verHash: 61765110}
+runtime.vdsoSymbolKeys = []runtime.vdsoSymbolKey len: 2, cap: 2, [...]
+runtime.vdsoGettimeofdaySym = 140734687239680
+runtime.vdsoClockgettimeSym = 140734687239744
+_cgo_init = unsafe.Pointer(0x0)
+_cgo_thread_start = unsafe.Pointer(0x0)
+_cgo_notify_runtime_init_done = unsafe.Pointer(0x0)
+_cgo_callers = unsafe.Pointer(0x0)
+_cgo_yield = unsafe.Pointer(0x0)
+_cgo_pthread_key_created = unsafe.Pointer(0x0)
+_cgo_getstackbound = unsafe.Pointer(0x0)
+_cgo_mmap = unsafe.Pointer(0x0)
+_cgo_munmap = unsafe.Pointer(0x0)
+_cgo_sigaction = unsafe.Pointer(0x0)
+internal/testlog.panicOnExit0 = struct { internal/testlog.mu sync.Mutex; internal/testlog.val bool } {mu: (*sync.Mutex)(0x5e5c18), val: false}
+io/fs.ErrInvalid = error(*errors.errorString) 0x585c78
+io/fs.ErrPermission = error(*errors.errorString) 0x585c88
+io/fs.ErrExist = error(*errors.errorString) 0x585c98
+io/fs.ErrNotExist = error(*errors.errorString) 0x585ca8
+io/fs.ErrClosed = error(*errors.errorString) 0x585cb8
+io/fs.SkipDir = error(*errors.errorString) 0x585cc8
+io/fs.SkipAll = error(*errors.errorString) 0x585cd8
+errors.ErrUnsupported = error(*errors.errorString) 0x585c38
+errors.errorType = internal/reflectlite.Type(internal/reflectlite.rtype) {Type: ("*internal/abi.Type")(0x4d8ee0)}
+path.ErrBadPattern = error(*errors.errorString) 0x585d88
+io.ErrShortWrite = error(*errors.errorString) 0x585ab8
+io.errInvalidWrite = error(*errors.errorString) 0x585ac8
+io.ErrShortBuffer = error(*errors.errorString) 0x585ad8
+io.EOF = error(*errors.errorString) 0x585ae8
+io.ErrUnexpectedEOF = error(*errors.errorString) 0x585af8
+io.ErrNoProgress = error(*errors.errorString) 0x585b08
+io.errWhence = error(*errors.errorString) 0x585b18
+io.errOffset = error(*errors.errorString) 0x585b28
+io.ErrClosedPipe = error(*errors.errorString) 0x585b38
+unicode/utf8.first = [256]uint8 [...]
+unicode/utf8.acceptRanges = [16]unicode/utf8.acceptRange [...]
+unicode.FoldCategory = map[string]*unicode.RangeTable [...]
+unicode.foldL = (*unicode.RangeTable)(0x581920)
+unicode.foldLl = (*unicode.RangeTable)(0x581960)
+unicode.foldLt = (*unicode.RangeTable)(0x5819a0)
+unicode.foldLu = (*unicode.RangeTable)(0x5819e0)
+unicode.foldM = (*unicode.RangeTable)(0x581a20)
+unicode.foldMn = (*unicode.RangeTable)(0x581a60)
+unicode.FoldScript = map[string]*unicode.RangeTable [...]
+unicode.foldCommon = (*unicode.RangeTable)(0x581aa0)
+unicode.foldGreek = (*unicode.RangeTable)(0x581ae0)
+unicode.foldInherited = (*unicode.RangeTable)(0x581b20)
+bytes.ErrTooLarge = error(*errors.errorString) 0x585a48
+bytes.errNegativeRead = error(*errors.errorString) 0x585a58
+bytes.errUnreadByte = error(*errors.errorString) 0x585a68
+internal/oserror.ErrInvalid = error(*errors.errorString) 0x585d38
+internal/oserror.ErrPermission = error(*errors.errorString) 0x585d48
+internal/oserror.ErrExist = error(*errors.errorString) 0x585d58
+internal/oserror.ErrNotExist = error(*errors.errorString) 0x585d68
+internal/oserror.ErrClosed = error(*errors.errorString) 0x585d78
+syscall.envOnce = sync.Once {done: (*"sync/atomic.Uint32")(0x5e5bf8), m: (*sync.Mutex)(0x5e5bfc)}
+syscall.envLock = sync.RWMutex {w: (*sync.Mutex)(0x5e5c80), writerSem: 0, readerSem: 0,...+2 more}
+syscall.env = map[string]int nil
+syscall.envs = []string len: 77, cap: 79, [...]
+syscall.origRlimitNofile = sync/atomic.Pointer[syscall.Rlimit] {_: [0]*syscall.Rlimit [], _: sync/atomic.noCopy {}, v: unsafe.Pointer(0x0)}
+syscall._zero = 0
+syscall.Stdin = 0
+syscall.Stdout = 1
+syscall.Stderr = 2
+syscall.errEAGAIN = error(syscall.Errno) EWOULDBLOCK (11)
+syscall.errEINVAL = error(syscall.Errno) EINVAL (22)
+syscall.errENOENT = error(syscall.Errno) ENOENT (2)
+syscall.errors = [133]string [...]
+syscall.signals = [32]string [...]
+time.std0x = [6]int [...]
+time.longDayNames = []string len: 7, cap: 7, [...]
+time.longMonthNames = []string len: 12, cap: 12, [...]
+time.errAtoi = error(*errors.errorString) 0x585be8
+time.errBad = error(*errors.errorString) 0x585bf8
+time.errLeadingInt = error(*errors.errorString) 0x585c08
+time.daysBefore = [13]int32 [...]
+time.startNano = 103225133699464
+time.UTC = (*time.Location)(0x581c20)
+time.utcLoc = time.Location {name: "UTC", zone: []time.zone len: 0, cap: 0, nil, tx: []time.zoneTrans len: 0, cap: 0, nil,...+4 more}
+time.Local = (*time.Location)(0x586140)
+time.localLoc = time.Location {name: "", zone: []time.zone len: 0, cap: 0, nil, tx: []time.zoneTrans len: 0, cap: 0, nil,...+4 more}
+time.localOnce = sync.Once {done: (*"sync/atomic.Uint32")(0x5e5c08), m: (*sync.Mutex)(0x5e5c0c)}
+time.errLocation = error(*errors.errorString) 0x585c18
+time.loadFromEmbeddedTZData = nil
+time.errBadData = error(*errors.errorString) 0x585c28
+time.loadTzinfoFromTzdata = nil
+time.platformZoneSources = []string len: 4, cap: 4, [...]
+context.Canceled = error(*errors.errorString) 0x585a78
+context.goroutines = sync/atomic.Int32 {_: sync/atomic.noCopy {}, v: 0}
+context.cancelCtxKey = 0
+context.closedchan = chan struct {} 0/0
+math.useFMA = true
+encoding/binary.errOverflow = error(*errors.errorString) 0x585a88
+reflect.intArgRegs = 9
+reflect.floatArgRegs = 15
+reflect.floatRegSize = 8
+reflect.kindNames = []string len: 27, cap: 27, [...]
+reflect.layoutCache = sync.Map {mu: (*sync.Mutex)(0x586040), read: (*"sync/atomic.Pointer[sync.readOnly]")(0x586048), dirty: map[interface {}]*sync.entry nil,...+1 more}
+reflect.bytesType = ("*internal/abi.Type")(0x4d2720)
+reflect.uint8Type = ("*internal/abi.Type")(0x4d3420)
+reflect.stringType = ("*internal/abi.Type")(0x4d33a0)
+reflect.dummy = struct { reflect.b bool; reflect.x interface {} } {b: false, x: interface {} nil}
+strconv.optimize = true
+strconv.ErrRange = error(*errors.errorString) 0x585c58
+strconv.ErrSyntax = error(*errors.errorString) 0x585c68
+strconv.leftcheats = []strconv.leftCheat len: 61, cap: 61, [...]
+strconv.detailedPowersOfTen = [696][2]uint64 [...]
+strconv.float32info = strconv.floatInfo {mantbits: 23, expbits: 8, bias: -127}
+strconv.float64info = strconv.floatInfo {mantbits: 52, expbits: 11, bias: -1023}
+strconv.uint64pow10 = [20]uint64 [...]
+strconv.isPrint16 = []uint16 len: 424, cap: 424, [...]
+strconv.isNotPrint16 = []uint16 len: 133, cap: 133, [...]
+strconv.isPrint32 = []uint32 len: 508, cap: 508, [...]
+strconv.isNotPrint32 = []uint16 len: 112, cap: 112, [...]
+strconv.isGraphic = []uint16 len: 16, cap: 16, [...]
+(dlv) vars reflect
+runtime.reflectOffs = struct { runtime.lock runtime.mutex; runtime.next int32; runtime.m map[int32]unsafe.Pointer; runtime.minv map[unsafe.Pointer]int32 } {lock: (*runtime.mutex)(0x5860e0), next: 0, m: map[int32]unsafe.Pointer nil,...+1 more}
+reflect.intArgRegs = 9
+reflect.floatArgRegs = 15
+reflect.floatRegSize = 8
+reflect.kindNames = []string len: 27, cap: 27, [...]
+reflect.layoutCache = sync.Map {mu: (*sync.Mutex)(0x586040), read: (*"sync/atomic.Pointer[sync.readOnly]")(0x586048), dirty: map[interface {}]*sync.entry nil,...+1 more}
+reflect.bytesType = ("*internal/abi.Type")(0x4d2720)
+reflect.uint8Type = ("*internal/abi.Type")(0x4d3420)
+reflect.stringType = ("*internal/abi.Type")(0x4d33a0)
+reflect.dummy = struct { reflect.b bool; reflect.x interface {} } {b: false, x: interface {} nil}
+(dlv) display -a id
+0: id = 5560689405192617653
+(dlv) continue
+> watchpoint on [id] main.produceValues() ./main.go:33 (hits goroutine(37):2 total:2) (PC: 0x4c82a1)
+Warning: listing may not match stale executable
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+    31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+=>  33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+0: id = 2408165156427653138
+(dlv) restart
+Discarded breakpoint id at 0x0 for :0: breakpoint 24 can not be enabled
+Process restarted with PID 52155
+(dlv) continue
+received SIGINT, stopping process (will not forward signal)
+> runtime.futex() /usr/local/go/src/runtime/sys_linux_amd64.s:558 (PC: 0x4739c3)
+Warning: debugging optimized function
+   553:		MOVQ	ts+16(FP), R10
+   554:		MOVQ	addr2+24(FP), R8
+   555:		MOVL	val3+32(FP), R9
+   556:		MOVL	$SYS_futex, AX
+   557:		SYSCALL
+=> 558:		MOVL	AX, ret+40(FP)
+   559:		RET
+   560:	
+   561:	// int32 clone(int32 flags, void *stk, M *mp, G *gp, void (*fn)(void));
+   562:	TEXT runtime·clone(SB),NOSPLIT|NOFRAME,$0
+   563:		MOVL	flags+0(FP), DI
+0: id = error could not find symbol value for id
+(dlv) clearall
+(dlv) continue main.go:31
+Breakpoint 25 set at 0x4c8295 for main.produceValues() ./main.go:31
+> [Breakpoint 25] main.produceValues() ./main.go:31 (hits goroutine(37):1 total:1) (PC: 0x4c8295)
+Warning: listing may not match stale executable
+    26:		// Create a bytes buffer of length 64.
+    27:		buf := make([]byte, 1<<6)
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+=>  31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+    33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+0: id = error could not find symbol value for id
+(dlv) next
+> main.produceValues() ./main.go:33 (PC: 0x4c82a1)
+Warning: listing may not match stale executable
+    28:	
+    29:		for {
+    30:			// Create a random ID.
+    31:			id := rand.Int()
+    32:			// Read some random data into our buffer.
+=>  33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+0: id = 2395456152963570619
+(dlv) display -a id == 5
+1: id == 5 = false
+(dlv) next
+> main.produceValues() ./main.go:37 (PC: 0x4c8317)
+Warning: listing may not match stale executable
+    32:			// Read some random data into our buffer.
+    33:			if _, err := rand.Read(buf); err != nil {
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+=>  37:			p := packet{id: id, val: buf}
+    38:			select {
+    39:			case <-ctx.Done():
+    40:				// If the context has been cancelled, return.
+    41:				return
+    42:			case ch <- p:
+0: id = 2395456152963570619
+1: id == 5 = false
+(dlv) print &p
+(dlv) next
+> main.produceValues() ./main.go:39 (PC: 0x4c8366)
+Warning: listing may not match stale executable
+    34:				panic(err)
+    35:			}
+    36:			// Create a packet struct to send over the channel.
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+=>  39:			case <-ctx.Done():
+    40:				// If the context has been cancelled, return.
+    41:				return
+    42:			case ch <- p:
+    43:				// Do nothing.
+    44:			}
+0: id = 2395456152963570619
+1: id == 5 = false
+(dlv) next
+> main.produceValues() ./main.go:42 (PC: 0x4c8386)
+Warning: listing may not match stale executable
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+    39:			case <-ctx.Done():
+    40:				// If the context has been cancelled, return.
+    41:				return
+=>  42:			case ch <- p:
+    43:				// Do nothing.
+    44:			}
+    45:	
+    46:			id -= 16
+    47:	
+0: id = 2395456152963570619
+1: id == 5 = false
+(dlv) print p
+main.packet {
+	id: 2395456152963570619,
+	val: []uint8 len: 64, cap: 64, [69,214,89,254,122,175,59,179,153,83,250,91,220,137,152,192,12,164,175,53,200,66,235,207,160,125,163,115,63,65,221,226,148,180,45,99,39,148,79,119,46,85,14,125,63,22,66,220,168,127,54,229,139,159,22,83,203,35,14,31,29,136,235,26],}
+(dlv) print &p
+(*main.packet)(0xc000188e80)
+(dlv) examinemem -fmt hex -count 20 0xc000188e80
+0xc000188e80:   0xbb   0xdb   0x6a   0xf0   0xad   0x5e   0x3e   0x21   
+0xc000188e88:   0x40   0x40   0x1a   0x00   0xc0   0x00   0x00   0x00   
+0xc000188e90:   0x40   0x00   0x00   0x00   
+(dlv) whatis p
+main.packet
+(dlv) set p.id = 500
+(dlv) print p.id
+500
+(dlv) goroutines
+  Goroutine 1 - User: /usr/local/go/src/runtime/sema.go:62 sync.runtime_Semacquire (0x46e765) [semacquire]
+  Goroutine 2 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [force gc (idle)]
+  Goroutine 17 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC sweep wait]
+  Goroutine 18 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC scavenge wait]
+  Goroutine 33 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [finalizer wait]
+  Goroutine 34 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [select]
+  Goroutine 35 - User: /usr/local/go/src/runtime/sigqueue.go:152 os/signal.signal_recv (0x46ea29) (thread 52160)
+  Goroutine 36 - User: ./main.go:97 main.main.func1 (0x4c9465) [chan receive]
+* Goroutine 37 - User: ./main.go:42 main.produceValues (0x4c8386) (thread 52158)
+  Goroutine 38 - User: ./main.go:60 main.consumeValues (0x4c8725) [select]
+[10 goroutines]
+(dlv) goroutine 36 stack 
+0  0x00000000004403dc in [1mruntime.gopark[0m
+   at /usr/local/go/src/runtime/[1mproc.go:403[0m
+1  0x0000000000407d7e in [1mruntime.chanrecv[0m
+   at /usr/local/go/src/runtime/[1mchan.go:583[0m
+2  0x0000000000407ad2 in [1mruntime.chanrecv1[0m
+   at /usr/local/go/src/runtime/[1mchan.go:442[0m
+3  0x00000000004c9465 in [1mmain.main.func1[0m
+   at ./[1mmain.go:97[0m
+4  0x00000000004c9402 in [1mmain.main.gowrap1[0m
+   at ./[1mmain.go:103[0m
+5  0x0000000000471c01 in [1mruntime.goexit[0m
+   at /usr/local/go/src/runtime/[1masm_amd64.s:1695[0m
+(dlv) stack
+0  0x00000000004c8386 in [1mmain.produceValues[0m
+   at ./[1mmain.go:42[0m
+1  0x00000000004c938f in [1mmain.main.gowrap2[0m
+   at ./[1mmain.go:112[0m
+2  0x0000000000471c01 in [1mruntime.goexit[0m
+   at /usr/local/go/src/runtime/[1masm_amd64.s:1695[0m
+(dlv) threads
+  Thread 52155 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52157 at 0x4733f7 /usr/local/go/src/runtime/sys_linux_amd64.s:135 runtime.usleep
+* Thread 52158 at 0x4c8386 ./main.go:42 main.produceValues
+  Thread 52159 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52160 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52161 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52162 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52163 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+(dlv) goroutines
+  Goroutine 1 - User: /usr/local/go/src/runtime/sema.go:62 sync.runtime_Semacquire (0x46e765) [semacquire]
+  Goroutine 2 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [force gc (idle)]
+  Goroutine 17 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC sweep wait]
+  Goroutine 18 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC scavenge wait]
+  Goroutine 33 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [finalizer wait]
+  Goroutine 34 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [select]
+  Goroutine 35 - User: /usr/local/go/src/runtime/sigqueue.go:152 os/signal.signal_recv (0x46ea29) (thread 52160)
+  Goroutine 36 - User: ./main.go:97 main.main.func1 (0x4c9465) [chan receive]
+* Goroutine 37 - User: ./main.go:42 main.produceValues (0x4c8386) (thread 52158)
+  Goroutine 38 - User: ./main.go:60 main.consumeValues (0x4c8725) [select]
+[10 goroutines]
+(dlv) threads
+  Thread 52155 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52157 at 0x4733f7 /usr/local/go/src/runtime/sys_linux_amd64.s:135 runtime.usleep
+* Thread 52158 at 0x4c8386 ./main.go:42 main.produceValues
+  Thread 52159 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52160 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52161 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52162 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+  Thread 52163 at 0x4739c3 /usr/local/go/src/runtime/sys_linux_amd64.s:558 runtime.futex
+(dlv) thread 52161
+Switched from 52158 to 52161
+(dlv) goroutines
+  Goroutine 1 - User: /usr/local/go/src/runtime/sema.go:62 sync.runtime_Semacquire (0x46e765) [semacquire]
+  Goroutine 2 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [force gc (idle)]
+  Goroutine 17 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC sweep wait]
+  Goroutine 18 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC scavenge wait]
+  Goroutine 33 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [finalizer wait]
+  Goroutine 34 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [select]
+  Goroutine 35 - User: /usr/local/go/src/runtime/sigqueue.go:152 os/signal.signal_recv (0x46ea29) (thread 52160)
+  Goroutine 36 - User: ./main.go:97 main.main.func1 (0x4c9465) [chan receive]
+  Goroutine 37 - User: ./main.go:42 main.produceValues (0x4c8386) (thread 52158)
+  Goroutine 38 - User: ./main.go:60 main.consumeValues (0x4c8725) [select]
+[10 goroutines]
+(dlv) thread 52158
+Switched from 52161 to 52158
+(dlv) goroutines
+  Goroutine 1 - User: /usr/local/go/src/runtime/sema.go:62 sync.runtime_Semacquire (0x46e765) [semacquire]
+  Goroutine 2 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [force gc (idle)]
+  Goroutine 17 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC sweep wait]
+  Goroutine 18 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [GC scavenge wait]
+  Goroutine 33 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [finalizer wait]
+  Goroutine 34 - User: /usr/local/go/src/runtime/proc.go:403 runtime.gopark (0x4403dc) [select]
+  Goroutine 35 - User: /usr/local/go/src/runtime/sigqueue.go:152 os/signal.signal_recv (0x46ea29) (thread 52160)
+  Goroutine 36 - User: ./main.go:97 main.main.func1 (0x4c9465) [chan receive]
+* Goroutine 37 - User: ./main.go:42 main.produceValues (0x4c8386) (thread 52158)
+  Goroutine 38 - User: ./main.go:60 main.consumeValues (0x4c8725) [select]
+[10 goroutines]
+(dlv) stack
+0  0x00000000004c8386 in [1mmain.produceValues[0m
+   at ./[1mmain.go:42[0m
+1  0x00000000004c938f in [1mmain.main.gowrap2[0m
+   at ./[1mmain.go:112[0m
+2  0x0000000000471c01 in [1mruntime.goexit[0m
+   at /usr/local/go/src/runtime/[1masm_amd64.s:1695[0m
+(dlv) up
+> main.produceValues() ./main.go:42 (PC: 0x4c8386)
+Frame 1: ./main.go:112 (PC: 4c938f)
+Warning: listing may not match stale executable
+   107:	
+   108:		// Add 2 to our WaitGroup since we are starting 2 goroutines.
+   109:		wg.Add(2)
+   110:	
+   111:		// Begin executing goroutine to produce values.
+=> 112:		go produceValues(ctx, &wg, ch)
+   113:	
+   114:		// Begin executing goroutine to consume values.
+   115:		go consumeValues(ctx, &wg, ch)
+   116:	
+   117:		// Wait until our goroutines have finished.
+(dlv) down
+> main.produceValues() ./main.go:42 (PC: 0x4c8386)
+Frame 0: ./main.go:42 (PC: 4c8386)
+Warning: listing may not match stale executable
+    37:			p := packet{id: id, val: buf}
+    38:			select {
+    39:			case <-ctx.Done():
+    40:				// If the context has been cancelled, return.
+    41:				return
+=>  42:			case ch <- p:
+    43:				// Do nothing.
+    44:			}
+    45:	
+    46:			id -= 16
+    47:	
+(dlv) exit

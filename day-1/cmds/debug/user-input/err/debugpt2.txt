@@ -1,0 +1,117 @@
+(dlv) stack
+0  0x000000000043a884 in [1mruntime.fatalpanic[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:1217[0m
+1  0x000000000043987d in [1mruntime.gopanic[0m
+   at /usr/local/go/src/runtime/[1mpanic.go:779[0m
+2  0x00000000004b1ad1 in [1mmain.gatherSentiment[0m
+   at ./[1mmain.go:38[0m
+3  0x00000000004b1574 in [1mmain.main[0m
+   at ./[1mmain.go:9[0m
+4  0x000000000043cbf2 in [1mruntime.main[0m
+   at /usr/local/go/src/runtime/[1mproc.go:271[0m
+5  0x000000000046b661 in [1mruntime.goexit[0m
+   at /usr/local/go/src/runtime/[1masm_amd64.s:1695[0m
+(dlv) break main.go:38
+Breakpoint 1 set at 0x4b1a0d for main.gatherSentiment() ./main.go:38
+(dlv) restart
+Process restarted with PID 20129
+(dlv) continue
+> [Breakpoint 1] main.gatherSentiment() ./main.go:38 (hits goroutine(1):1 total:1) (PC: 0x4b1a0d)
+    33:		case i > 2 && i < 7:
+    34:			fmt.Println("Guess it's going alright... :-|")
+    35:		case i > 6 && i < 11:
+    36:			fmt.Println("Guess it's going GREAT!!! :-D")
+    37:		default:
+=>  38:			panic(fmt.Sprintf("Invalid response received: %d\n", i))
+    39:		}
+    40:	}
+    41:	
+    42:	func withinBounds(n *int) bool {
+    43:		*n -= 10
+(dlv) list -10
+Showing /home/v8tix/Public/courses/go/debugging/repo/ultimate-go-debugging-ultimate-debug-open-enrollment-2/day-1/cmds/debug/user-input/err/main.go:28 (PC: 0x0)
+    23:			panic(err)
+    24:		}
+    25:	
+    26:		if !withinBounds(&i) {
+    27:			panic("user input not within expected bounds")
+    28:		}
+    29:	
+    30:		switch {
+    31:		case i > 0 && i < 3:
+    32:			fmt.Println("Guess it's going terribly... :(")
+    33:		case i > 2 && i < 7:
+(dlv) print i
+-1
+(dlv) list -15
+Showing /home/v8tix/Public/courses/go/debugging/repo/ultimate-go-debugging-ultimate-debug-open-enrollment-2/day-1/cmds/debug/user-input/err/main.go:23 (PC: 0x4b1af9)
+    18:		fmt.Println("How would you rate the class from 1-10:")
+    19:	
+    20:		var i int
+    21:		_, err := fmt.Scanln(&i)
+    22:		if err != nil {
+    23:			panic(err)
+    24:		}
+    25:	
+    26:		if !withinBounds(&i) {
+    27:			panic("user input not within expected bounds")
+    28:		}
+(dlv) break main.go:26
+Breakpoint 2 set at 0x4b17ce for main.gatherSentiment() ./main.go:26
+(dlv) restart
+Process restarted with PID 20206
+(dlv) continue
+> [Breakpoint 2] main.gatherSentiment() ./main.go:26 (hits goroutine(1):1 total:1) (PC: 0x4b17ce)
+    21:		_, err := fmt.Scanln(&i)
+    22:		if err != nil {
+    23:			panic(err)
+    24:		}
+    25:	
+=>  26:		if !withinBounds(&i) {
+    27:			panic("user input not within expected bounds")
+    28:		}
+    29:	
+    30:		switch {
+    31:		case i > 0 && i < 3:
+(dlv) print i
+9
+(dlv) help watch 
+Set watchpoint.
+	
+	watch [-r|-w|-rw] <expr>
+	
+	-r	stops when the memory location is read
+	-w	stops when the memory location is written
+	-rw	stops when the memory location is read or written
+
+The memory location is specified with the same expression language used by 'print', for example:
+
+	watch v
+	watch -w *(*int)(0x1400007c018)
+
+will watch the address of variable 'v' and writes to an int at addr '0x1400007c018'.
+
+Note that writes that do not change the value of the watched memory address might not be reported.
+
+See also: "help print".
+(dlv) watch -w i
+Watchpoint i set at 0xc000110020
+(dlv) continue
+> watchpoint on [i] main.withinBounds() ./main.go:44 (hits goroutine(1):1 total:1) (PC: 0x4b1b8a)
+    39:		}
+    40:	}
+    41:	
+    42:	func withinBounds(n *int) bool {
+    43:		*n -= 10
+=>  44:		return *n <= 0
+    45:	}
+(dlv) list
+> watchpoint on [i] main.withinBounds() ./main.go:44 (hits goroutine(1):1 total:1) (PC: 0x4b1b8a)
+    39:		}
+    40:	}
+    41:	
+    42:	func withinBounds(n *int) bool {
+    43:		*n -= 10
+=>  44:		return *n <= 0
+    45:	}
+(dlv) exit
